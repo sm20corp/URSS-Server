@@ -12,31 +12,31 @@ import org.junit.runner.RunWith;
 @RunWith(VertxUnitRunner.class)
 public class MyFirstVerticleTest {
 
-  private Vertx vertx;
+private Vertx vertx;
 
-  @Before
-  public void setUp(TestContext context) {
-    vertx = Vertx.vertx();
-    vertx.deployVerticle(MyFirstVerticle.class.getName(),
-        context.asyncAssertSuccess());
-  }
+@Before
+public void setUp(TestContext context) {
+  vertx = Vertx.vertx();
+  vertx.deployVerticle(MyFirstVerticle.class.getName(),
+                       context.asyncAssertSuccess());
+}
 
-  @After
-  public void tearDown(TestContext context) {
-    vertx.close(context.asyncAssertSuccess());
-  }
+@After
+public void tearDown(TestContext context) {
+  vertx.close(context.asyncAssertSuccess());
+}
 
-  @Test
-  public void testMyApplication(TestContext context) {
-    final Async async = context.async();
+@Test
+public void testMyApplication(TestContext context) {
+  final Async async = context.async();
 
-    vertx.createHttpClient().getNow(4242, "localhost", "/",
-     response -> {
+  vertx.createHttpClient().getNow(4242, "localhost", "/",
+                                  response -> {
       response.handler(body -> {
         System.out.println("body: " + body);
         context.assertTrue(body.toString().contains("Corentin"));
         async.complete();
       });
     });
-  }
+}
 }
