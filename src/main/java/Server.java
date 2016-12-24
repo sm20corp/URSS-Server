@@ -6,7 +6,7 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 
-public class MyFirstVerticle extends AbstractVerticle {
+public class Server extends AbstractVerticle {
   @Override
   public void start(Future<Void> fut) {
     vertx
