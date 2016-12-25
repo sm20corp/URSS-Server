@@ -17,7 +17,7 @@ public class ServerTest {
   @Before
   public void setUp(TestContext context) {
     vertx = Vertx.vertx();
-    vertx.deployVerticle(MyFirstVerticle.class.getName(),
+    vertx.deployVerticle(Server.class.getName(),
                          context.asyncAssertSuccess());
   }
 

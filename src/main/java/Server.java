@@ -5,10 +5,27 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
 
 public class Server extends AbstractVerticle {
   @Override
   public void start(Future<Void> fut) {
+
+    Router router = Router.router(vertx);
+
+    router.route().handler(BodyHandler.create());
+
+    /*
+       router.route().handler(BodyHandler.create());
+       router.get("/products/:productID").handler(this::handleGetProduct);
+       router.put("/products/:productID").handler(this::handleAddProduct);
+       router.get("/products").handler(this::handleListProducts);
+
+       vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+     */
+
     vertx
     .createHttpServer()
     .requestHandler(r -> {
