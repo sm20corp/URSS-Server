@@ -10,15 +10,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
-public class MyFirstVerticleTest {
+public class ServerTest {
 
   private Vertx vertx;
 
   @Before
   public void setUp(TestContext context) {
     vertx = Vertx.vertx();
-    vertx.deployVerticle(MyFirstVerticle.class.getName(),
-        context.asyncAssertSuccess());
+    vertx.deployVerticle(Server.class.getName(),
+                         context.asyncAssertSuccess());
   }
 
   @After
@@ -31,7 +31,7 @@ public class MyFirstVerticleTest {
     final Async async = context.async();
 
     vertx.createHttpClient().getNow(4242, "localhost", "/",
-     response -> {
+                                    response -> {
       response.handler(body -> {
         System.out.println("body: " + body);
         context.assertTrue(body.toString().contains("Corentin"));
