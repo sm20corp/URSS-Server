@@ -1,11 +1,9 @@
 package urss.server.components;
 
-import io.vertx.core.json.JsonObject;
+import urss.server.components.IModel;
+import urss.server.components.AModel;
 
-import urss.server.components.IDatabaseConfig;
-import urss.server.components.JsonHandler;
-
-public class MongoConfig implements IDatabaseConfig<MongoConfig> {
+public class MongoConfig extends AModel<MongoConfig> implements IModel<MongoConfig> {
   private static final String defaultURI = "mongodb://localhost:27017";
   private static final String defaultName = "urss";
   private String connection_string;
@@ -40,17 +38,5 @@ public class MongoConfig implements IDatabaseConfig<MongoConfig> {
   @Override
   public String toString() {
     return "uri: " + getURI() + " - name: " + getName();
-  }
-
-/*
-   generic abstract class for these two methods ?
- */
-
-  public JsonObject toJSON() {
-    return new JsonObject(JsonHandler.getInstance().toJson(this));
-  }
-
-  public MongoConfig fromJSON(JsonObject json) {
-    return JsonHandler.getInstance().fromJson(json.toString(), MongoConfig.class);
   }
 }

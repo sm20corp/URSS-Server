@@ -1,7 +1,7 @@
 package urss.server.components;
 
 abstract public class ADatabaseClient<CLIENT> {
-  private CLIENT dbClient = null;
+  protected CLIENT dbClient = null;
 
   public void setClient(CLIENT client) {
     this.dbClient = client;

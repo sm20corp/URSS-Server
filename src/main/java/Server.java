@@ -9,73 +9,65 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
+import urss.server.components.MongoDB;
+import urss.server.api.user.UserRoute;
+
 public class Server extends AbstractVerticle {
+  private static Server instance = null;
+  private Router router;
+  private MongoDB db;
+
   @Override
   public void start(Future<Void> fut) {
 
-    Router router = Router.router(vertx);
+    instance = this;
 
-    router.route().handler(BodyHandler.create());
+    this.db = MongoDB.getInstance();// default instance points to localhost:27017 to "urss" db
 
-    /*
-       router.route().handler(BodyHandler.create());
-       router.get("/products/:productID").handler(this::handleGetProduct);
-       router.put("/products/:productID").handler(this::handleAddProduct);
-       router.get("/products").handler(this::handleListProducts);
+    this.router = Router.router(vertx);
 
-       vertx.createHttpServer().requestHandler(router::accept).listen(8080);
-     */
+    this.router.route().handler(BodyHandler.create());
 
-    vertx
-    .createHttpServer()
-    .requestHandler(r -> {
-      JsonObject config = Vertx.currentContext().config();
+    this.router.get("/").handler(this::home);
 
-      String uri = config.getString("mongo_uri");
-      if (uri == null) {
-        uri = "mongodb://localhost:27017";
-      }
-      String db = config.getString("mongo_db");
-      if (db == null) {
-        db = "urss";
-      }
-      JsonObject mongoconfig = new JsonObject()
-                               .put("connection_string", uri)
-                               .put("db_name", db);
+    UserRoute.attachRoutes(this.router);
+//    FeedRoute.attachRoutes(this.router);
 
-      System.out.println("going to create a mongo client ...");
-
-      MongoClient mongoClient = MongoClient.createShared(vertx, mongoconfig);
-
-      System.out.println("... mongo client");
-
-      JsonObject product1 = new JsonObject().put("itemId", "12345").put("name", "Cooler").put("price", "100.0");
-
-      mongoClient.save("products", product1, id -> {
-        System.out.println("Inserted id: " + id.result());
-
-        mongoClient.find("products", new JsonObject().put("itemId", "12345"), res -> {
-          System.out.println("Name is " + res.result().get(0).getString("name"));
-          /*
-
-             mongoClient.remove("products", new JsonObject().put("itemId", "12345"), rs -> {
-             if (rs.succeeded()) {
-              System.out.println("Product removed ");
-             }
-             });
-           */
-
-        });
-
-      });
-      r.response().end("<h1>Cotisez vous pour acheter un micro à Corentin</h1>");
-    })
-    .listen(4242, result -> {
+    vertx.createHttpServer().requestHandler(router::accept).listen(4242, result -> {
       if (result.succeeded()) {
         fut.complete();
-      } else {
+      }
+      else {
         fut.fail(result.cause());
       }
     });
+  }
+
+  public void home(RoutingContext rc) {
+    System.out.println("homepage");
+    JsonObject product1 = new JsonObject().put("itemId", "12345").put("name", "Cooler").put("price", "100.0");
+
+    db.getClient().save("products", product1, id -> {
+      System.out.println("Inserted id: " + id.result());
+
+      db.getClient().find("products", new JsonObject().put("itemId", "12345"), res -> {
+        System.out.println("Name is " + res.result().get(0).getString("name"));
+        /*
+
+           MongoDB.getClient().remove("products", new JsonObject().put("itemId", "12345"), rs -> {
+           if (rs.succeeded()) {
+            System.out.println("Product removed ");
+           }
+           });
+         */
+
+      });
+
+    });
+    rc.response().end("<h1>Cotisez vous pour acheter un micro à Corentin</h1>");
+  }
+
+  public static Server getInstance() {
+    return instance;
   }
 }

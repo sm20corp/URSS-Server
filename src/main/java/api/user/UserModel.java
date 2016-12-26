@@ -1,6 +1,9 @@
-package urss.server;
+package urss.server.api.user;
 
-public class UserModel {
+import urss.server.components.IModel;
+import urss.server.components.AModel;
+
+public class UserModel extends AModel<UserModel> implements IModel<UserModel> {
   private static final String defaultEmail = "";
   private static final String defaultPassword = "";
   private String email;

@@ -1,46 +1,43 @@
 package urss.server.components;
 
-import io.vertx.core.Vertx;
 import io.vertx.ext.mongo.MongoClient;
 
 import urss.server.components.MongoConfig;
+import urss.server.Server;
 
 public class MongoDB extends ADatabaseClient<MongoClient> {
   private static final MongoConfig defaultConf = new MongoConfig();
   private static MongoDB instance = null;
 
-  private MongoDB(Vertx vertx) {
+  private MongoDB() {
     setClient(MongoClient.createShared(
-                vertx,
+                Server.getInstance().getVertx(),
                 this.defaultConf.toJSON()));
   }
 
-  private MongoDB(Vertx vertx, MongoConfig conf) {
+  private MongoDB(MongoConfig conf) {
     setClient(MongoClient.createShared(
-                vertx,
+                Server.getInstance().getVertx(),
                 conf.toJSON()));
   }
 
   public static MongoDB getInstance() {
-    return instance;
-  }
-
-  public static MongoDB getInstance(Vertx vertx) {
     if (instance == null) {
-      instance = new MongoDB(vertx);
+      instance = new MongoDB();
     }
     return instance;
   }
 
-  public static MongoDB getInstance(Vertx vertx, MongoConfig conf) {
+  public static MongoDB getInstance(MongoConfig conf) {
     if (instance == null) {
-      instance = new MongoDB(vertx, conf);
+      instance = new MongoDB(conf);
     }
     return instance;
   }
 
   /*
-     implement functions, maybe use an interface
+   * If we go for a full abstraction of the database, we should do an interface
+   * and define all methods here
    */
 
   // create
@@ -48,4 +45,5 @@ public class MongoDB extends ADatabaseClient<MongoClient> {
   // getAll
   // update
   // delete
+  // ...
 }
