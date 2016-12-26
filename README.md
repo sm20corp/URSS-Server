@@ -1,2 +1,2 @@
 # URSS-Server
-urss server (java)
+URSS Server, fetch RSS feeds (Java, Vert.x, MongoDB, Docker, JUnit, javadoc)
