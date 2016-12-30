@@ -39,4 +39,9 @@ public class UserModel extends AModel<UserModel> implements IModel<UserModel> {
   public String toString() {
     return "email: " + getEmail() + " -  password: " + getPassword();
   }
+
+  @Override
+  public Boolean validate() {
+    return true;
+  }
 }

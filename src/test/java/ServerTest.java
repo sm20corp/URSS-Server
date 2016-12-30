@@ -1,6 +1,7 @@
 package urss.server;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -30,13 +31,18 @@ public class ServerTest {
   public void testMyApplication(TestContext context) {
     final Async async = context.async();
 
-    vertx.createHttpClient().getNow(4242, "localhost", "/",
+    vertx.createHttpClient().post(4242, "localhost", "/auth/local/",
                                     response -> {
       response.handler(body -> {
-        System.out.println("body: " + body);
-        context.assertTrue(body.toString().contains("Corentin"));
+        System.out.println("response: " + body);
+//        context.assertTrue(body.toString().contains("credential"));
         async.complete();
       });
-    });
+    })
+    .end(Buffer.buffer("{" +
+                        "\"email\":\"ouloulou@yopmail.com\"," +
+                        "\"password\":\"abc123\"," +
+                        "\"role\":\"admin\"" +
+                       "}"));
   }
 }

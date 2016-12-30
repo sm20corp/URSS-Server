@@ -8,9 +8,13 @@ import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.JWTAuthHandler;
+import io.vertx.core.http.HttpMethod;
 
 import urss.server.components.MongoDB;
-import urss.server.api.user.UserRoute;
+import urss.server.auth.AuthService;
+import urss.server.api.credential.CredentialRoute;
+import urss.server.api.article.ArticleRoute;
 
 public class Server extends AbstractVerticle {
   private static Server instance = null;
@@ -19,19 +23,14 @@ public class Server extends AbstractVerticle {
 
   @Override
   public void start(Future<Void> fut) {
-
     instance = this;
 
     this.db = MongoDB.getInstance();// default instance points to localhost:27017 to "urss" db
-
     this.router = Router.router(vertx);
 
-    this.router.route().handler(BodyHandler.create());
-
-    this.router.get("/").handler(this::home);
-
-    UserRoute.attachRoutes(this.router);
-//    FeedRoute.attachRoutes(this.router);
+    configure();
+    setupAuthentication();
+    setupRoutes();
 
     vertx.createHttpServer().requestHandler(router::accept).listen(4242, result -> {
       if (result.succeeded()) {
@@ -43,28 +42,27 @@ public class Server extends AbstractVerticle {
     });
   }
 
-  public void home(RoutingContext rc) {
-    System.out.println("homepage");
-    JsonObject product1 = new JsonObject().put("itemId", "12345").put("name", "Cooler").put("price", "100.0");
+  private void configure() {
+    this.router.route().handler(BodyHandler.create());
+  }
 
-    db.getClient().save("products", product1, id -> {
-      System.out.println("Inserted id: " + id.result());
+  private void setupAuthentication() {
+    JWTAuthHandler authRedirect = AuthService.getInstance().generateHandler("/auth/local");
 
-      db.getClient().find("products", new JsonObject().put("itemId", "12345"), res -> {
-        System.out.println("Name is " + res.result().get(0).getString("name"));
-        /*
+    this.router.route("/api/users/*").handler(authRedirect);
+    this.router.route("/api/histories/*").handler(authRedirect);
+    this.router.route("/api/credentials/:id").handler(authRedirect);
+    this.router.route(HttpMethod.GET, "/api/credentials/").handler(authRedirect);
+  }
 
-           MongoDB.getClient().remove("products", new JsonObject().put("itemId", "12345"), rs -> {
-           if (rs.succeeded()) {
-            System.out.println("Product removed ");
-           }
-           });
-         */
+  private void setupRoutes() {
+    this.router.post("/auth/local").handler(AuthService.getInstance()::authLocal);
 
-      });
-
-    });
-    rc.response().end("<h1>Cotisez vous pour acheter un micro à Corentin</h1>");
+    CredentialRoute.attachRoutes(this.router);
+    ArticleRoute.attachRoutes(this.router);
+    //FeedRoute.attachRoutes(this.router);
+    //HistoryRoute.attachRoutes(this.router);
+    //UserRoute.attachRoutes(this.router);
   }
 
   public static Server getInstance() {
