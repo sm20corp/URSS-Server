@@ -1,5 +1,5 @@
 # URSS-Server
-URSS Server, fetch RSS feeds (Java, Vert.x, MongoDB, Docker, JUnit, javadoc).
+URSS Server, fetch RSS feeds (Java, Vert.x, MongoDB, Docker, JUnit, javadoc, ROME for RSS feeds).
 
 # Maven powered
 Follow these instructions from the root of this repository to set it up and running.
