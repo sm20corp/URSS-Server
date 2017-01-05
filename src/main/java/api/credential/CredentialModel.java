@@ -10,6 +10,8 @@ public class CredentialModel extends AModel<CredentialModel> implements IModel<C
   private static final String defaultPassword = "";
   private static final String defaultRole = "user";
   private static final int bcryptLogRounds = 12;
+  public static final String[] requiredFields = { "email", "password" };
+  public static final String[] optionalFields = { "role" };
   private String email;
   private String password;
   private String role;

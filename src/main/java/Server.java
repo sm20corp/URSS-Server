@@ -4,12 +4,13 @@ import io.vertx.core.Vertx;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.JWTAuthHandler;
-import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.handler.CorsHandler;
 
 import urss.server.components.MongoDB;
 import urss.server.auth.AuthService;
@@ -43,6 +44,18 @@ public class Server extends AbstractVerticle {
   }
 
   private void configure() {
+    this.router.route().handler(CorsHandler.create("*")
+    .allowedMethod(HttpMethod.GET)
+    .allowedMethod(HttpMethod.POST)
+    .allowedMethod(HttpMethod.OPTIONS)
+    .allowedMethod(HttpMethod.PUT)
+    .allowedMethod(HttpMethod.PATCH)
+    .allowedMethod(HttpMethod.DELETE)
+    .allowedHeader("Access-Control-Request-Method")
+    .allowedHeader("Access-Control-Allow-Credentials")
+    .allowedHeader("Access-Control-Allow-Origin")
+    .allowedHeader("Access-Control-Allow-Headers")
+    .allowedHeader("Content-Type"));
     this.router.route().handler(BodyHandler.create());
   }
 

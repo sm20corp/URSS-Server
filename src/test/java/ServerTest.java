@@ -40,9 +40,8 @@ public class ServerTest {
       });
     })
     .end(Buffer.buffer("{" +
-                        "\"email\":\"ouloulou@yopmail.com\"," +
-                        "\"password\":\"abc123\"," +
-                        "\"role\":\"admin\"" +
+                        "\"email\":\"farouko@justicier.com\"," +
+                        "\"password\":\"toto123\"" +
                        "}"));
   }
 }

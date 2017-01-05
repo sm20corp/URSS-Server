@@ -24,7 +24,7 @@ public class AuthService {
         .put("keyStore", new JsonObject()
           .put("type", "jceks")
           .put("path", "keystore.jceks")
-          .put("password", "secret"))));
+          .put("password", System.getenv().get("SECRET")))));
     setLogger(LoggerFactory.getLogger(AuthService.class.getName()));
   }
 
@@ -61,6 +61,14 @@ public class AuthService {
           JsonObject credential = credentialRes.result();
           getLogger().info("credential: " + credential);
 
+          if (credential == null) {
+            ctx.response()
+            .setStatusCode(HttpURLConnection.HTTP_NOT_FOUND)
+            .putHeader("content-type", "application/json; charset=utf-8")
+            .end(new JsonObject().put("message", "no credential matched your email").encodePrettily());
+            return ;
+          }
+
           // check if the credential is linked to a user
           MongoDB.getInstance().getClient()
           .findOne(
@@ -73,9 +81,13 @@ public class AuthService {
               if (userRes.succeeded()) {
                 getLogger().info("role: " + credential.getString("role"));
                 JsonObject user = userRes.result();
+
                 if (user == null) {
                   getLogger().info("credential is not linked to a user");
-                  ctx.fail(HttpURLConnection.HTTP_BAD_REQUEST);
+                  ctx.response()
+                  .setStatusCode(HttpURLConnection.HTTP_NOT_FOUND)
+                  .putHeader("content-type", "application/json; charset=utf-8")
+                  .end(new JsonObject().put("message", "credential is not linked to a user").encodePrettily());
                   return ;
                 }
                 getLogger().info("user: " + user);
@@ -86,8 +98,22 @@ public class AuthService {
                   ctx.fail(HttpURLConnection.HTTP_UNAUTHORIZED);
                   return ;
                 }
-                // update last connected field
 
+                // update last connected field
+                MongoDB.getInstance().getClient()
+                .update(
+                  "users",
+                  new JsonObject().put("_id", user.getString("_id")),
+                  new JsonObject().put("$currentDate", new JsonObject().put("lastConnected", true)),
+                  res -> {
+                    if (res.succeeded()) {
+                      System.out.println("updated: " + res.result());
+                    }
+                    else {
+                      getLogger().info("FAIL: " + res.cause().getMessage());
+                    }
+                  }
+                );
 
                 // generate token with user's id and role
                 ctx.response()
