@@ -8,6 +8,7 @@ Follow these instructions from the root of this repository to set it up and runn
 * Build and test "$> mvn clean package"
 * Run "$> java -jar target/Server-1.0.0-fat.jar"
 
+
 ---
 
 __Epitech project__
