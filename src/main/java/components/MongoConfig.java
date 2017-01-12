@@ -37,6 +37,12 @@ public class MongoConfig extends AModel<MongoConfig> implements IModel<MongoConf
 
   @Override
   public String toString() {
-    return "uri: " + getURI() + " - name: " + getName();
+    return ("uri: " + getURI() +
+            " - name: " + getName());
+  }
+
+  @Override
+  public Boolean validate() {
+    return true;
   }
 }
