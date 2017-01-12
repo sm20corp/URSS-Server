@@ -9,10 +9,32 @@ import urss.server.components.JsonHandler;
 import urss.server.api.credential.CredentialModel;
 
 public class CredentialController {
-  public static void create(RoutingContext ctx) {
+  public static void isMe(RoutingContext ctx) {
+    String id = ctx.request().getParam("id");
+
+    System.out.println("user principal: " + ctx.user().principal());
+    System.out.println("you want this id: " + id);
+    System.out.println("isAdmin: " + ctx.get("isAdmin"));
+
+    if ((boolean) ctx.get("isAdmin") == true || ctx.user().principal().getString("userId") == id) {
+      System.out.println("Access granted");
+
+      ctx.next();
+    }
+    else {
+      System.out.println("Access denied");
+      ctx.response()
+      .setStatusCode(HttpURLConnection.HTTP_UNAUTHORIZED)
+      .putHeader("content-type", "application/json; charset=utf-8")
+      .end(new JsonObject().put("message", "You are not admin and you are requesting a resource that isn't yours").encodePrettily());
+      return ;
+    }
+  }
+
+  public static void verifyProperties(RoutingContext ctx) {
+    System.out.println("verifyProperties");
     JsonObject body = ctx.getBodyAsJson();
-    System.out.println("params: " + ctx.request().params());
-    System.out.println("body: " + body);
+
 
     if (!JsonHandler.verifyProperties(body, CredentialModel.requiredFields)) {
       System.out.println("required fields not present in request's body");
@@ -23,6 +45,16 @@ public class CredentialController {
       .end(new JsonObject().put("message", "required fields not present in request's body").encodePrettily());
       return ;
     }
+    else {
+      System.out.println("properties verified");
+      ctx.next();
+    }
+  }
+
+  public static void create(RoutingContext ctx) {
+    JsonObject body = ctx.getBodyAsJson();
+    System.out.println("params: " + ctx.request().params());
+    System.out.println("body: " + body);
 
     CredentialModel model = JsonHandler.getInstance().fromJson(ctx.getBodyAsJson().toString(), CredentialModel.class);
 
@@ -57,11 +89,6 @@ public class CredentialController {
 
   public static void show(RoutingContext ctx) {
     String id = ctx.request().getParam("id");
-
-    // TODO
-    // do the current user has the rights to see the requested id infos ? should be its id or admin
-
-    System.out.println("you want this id: " + id);
 
     MongoDB.getInstance().getClient().findOne(
       "credentials",

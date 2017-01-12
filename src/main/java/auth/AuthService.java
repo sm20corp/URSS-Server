@@ -1,5 +1,8 @@
 package urss.server.auth;
 
+
+import java.util.ArrayList;
+import java.util.List;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -40,7 +43,27 @@ public class AuthService {
   }
 
   private String generateToken(String id, String role) {
-    return getJWT().generateToken(new JsonObject().put("userId", id).put("role", role), new JWTOptions().setExpiresInSeconds(60L));
+    List<String> authorities = new ArrayList<>();
+
+    authorities.add("role:" + role);
+
+    return getJWT().generateToken(new JsonObject().put("userId", id).put("role", role), new JWTOptions().setExpiresInSeconds(60L).setPermissions(authorities));
+  }
+
+  public void hasAuthority(RoutingContext ctx) {
+    ctx.user().isAuthorised("role:user", res -> {
+      if (res.succeeded()) {
+        boolean hasAuthority = res.result();
+
+        ctx.put("isAdmin", hasAuthority);
+        ctx.next();
+      }
+      else {
+        getLogger().info("FAIL: " + res.cause().getMessage());
+        ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        return ;
+      }
+    });
   }
 
   public void authLocal(RoutingContext ctx) {
