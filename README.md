@@ -16,7 +16,7 @@ Follow these instructions from the root of this repository to deploy this server
 * Generate JWT key "$> keytool -genseckey -keystore keystore.jceks -storetype jceks -storepass $SECRET -keyalg HMacSHA256 -keysize 2048 -alias HS256 -keypass $SECRET"
 * Build and test "$> mvn clean package"
 * Build images "$> docker-compose build"
-* Deploy "$> docker-compose up"
+* Deploy "$> docker-compose up -d"
 
 ---
 
