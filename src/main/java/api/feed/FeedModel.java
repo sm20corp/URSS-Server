@@ -102,6 +102,11 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
     return (this.skipDays);
   }
 
+  @Override
+  public Boolean validate() {
+    return true;
+  }
+
   public static class Builder {
     private String title;
     private String link;
