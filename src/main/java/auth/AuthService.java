@@ -47,11 +47,11 @@ public class AuthService {
 
     authorities.add("role:" + role);
 
-    return getJWT().generateToken(new JsonObject().put("userId", id).put("role", role), new JWTOptions().setExpiresInSeconds(60L).setPermissions(authorities));
+    return getJWT().generateToken(new JsonObject().put("userId", id).put("role", role), new JWTOptions().setExpiresInSeconds(3600L).setPermissions(authorities));
   }
 
   public void hasAuthority(RoutingContext ctx) {
-    ctx.user().isAuthorised("role:user", res -> {
+    ctx.user().isAuthorised("role:admin", res -> {
       if (res.succeeded()) {
         boolean hasAuthority = res.result();
 
