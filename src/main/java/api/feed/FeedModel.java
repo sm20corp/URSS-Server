@@ -29,25 +29,25 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
   //Add private member array of article
 
 
-  private FeedModel(Builder builder) {
-    this.title = builder.title;
-    this.link = builder.link;
-    this.description = builder.description;
-    this.language = builder.language;
-    this.copyright = builder.copyright;
-    this.managingEditor = builder.managingEditor;
-    this.webMaster = builder.webMaster;
-    this.pubDate =  builder.pubDate;
-    this.lastBuildDate = builder.lastBuildDate;
-    this.categoryArray =  builder.categoryArray;
-    this.generator = builder.generator;
-    this.docs = builder.docs;
-    this.cloud = builder.cloud;
-    this.ttl = builder.ttl;
-    this.image = builder.image;
-    this.textInput = builder.textInput;
-    this.skipHours = builder.skipHours;
-    this.skipDays = builder.skipDays;
+  public FeedModel(String title, String link, String description) {
+    this.title = title;
+    this.link = link;
+    this.description = description;
+    this.language = "";
+    this.copyright = "";
+    this.managingEditor = "";
+    this.webMaster = "";
+    this.pubDate =  "";
+    this.lastBuildDate = "";
+    this.categoryArray = null;
+    this.generator = "";
+    this.docs = "";
+    this.cloud = null;
+    this.ttl = 0;
+    this.image = null;
+    this.textInput = null;
+    this.skipHours = null;
+    this.skipDays = null;
   }
 
   public String getTitle() {
@@ -102,122 +102,10 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
     return (this.skipDays);
   }
 
-  public static class Builder {
-    private String title;
-    private String link;
-    private String description;
-    private String language;
-    private String copyright;
-    private String managingEditor;
-    private String webMaster;
-    private String pubDate;
-    private String lastBuildDate;
-    private Category[] categoryArray;
-    private String generator;
-    private String docs;
-    private Cloud cloud;
-    private Integer ttl;
-    private Image image;
-    private TextInput textInput;
-    private Integer[] skipHours;
-    private String[] skipDays;
-
-
-    public Builder(String title, String link, String description, String language,
-                    String copyright, String managingEditor, String webMaster, String pubDate,
-                    String lastBuildDate, Category[] categoryArray, String generator, String docs,
-                    Cloud cloud, Integer ttl, Image image, TextInput textInput, Integer[] skipHours,
-                    String[] skipDays) {
-      this.title = title;
-      this.link = link;
-      this.description = description;
-      this.language = language;
-      this.copyright = copyright;
-      this.managingEditor = managingEditor;
-      this.webMaster = webMaster;
-      this.pubDate =  pubDate;
-      this.lastBuildDate = lastBuildDate;
-      this.categoryArray =  categoryArray;
-      this.generator = generator;
-      this.docs = docs;
-      this.cloud = cloud;
-      this.ttl = ttl;
-      this.image = image;
-      this.textInput = textInput;
-      this.skipHours = skipHours;
-      this.skipDays = skipDays;
-    }
-
-    public Builder title(String title) {
-      this.title = title;
-      return (this);
-    }
-    public Builder link(String link) {
-      this.link = link;
-      return (this);
-    }
-    public Builder description(String description) {
-      this.description = description;
-      return (this);
-    }
-    public Builder language(String language) {
-      this.language = language;
-      return (this);
-    }
-    public Builder copyright(String copyright) {
-      this.copyright = copyright;
-      return (this);
-    }
-    public Builder managingEditor(String managingEditor) {
-      this.title = managingEditor;
-      return (this);
-    }
-    public Builder webMaster(String webMaster) {
-      this.webMaster = webMaster;
-      return (this);
-    }
-    public Builder pubDate(String pubDate) {
-      this.pubDate = pubDate;
-      return (this);
-    }
-    public Builder lastBuildDate(String lastBuildDate) {
-      this.lastBuildDate = lastBuildDate;
-      return (this);
-    }
-    public Builder categoryArray(Category[] categoryArray) {
-      this.categoryArray = categoryArray;
-      return (this);
-    }
-    public Builder generator(String generator) {
-      this.generator = generator;
-      return (this);
-    }
-    public Builder docs(String docs) {
-      this.docs = docs;
-      return (this);
-    }
-    public Builder ttl(Integer ttl) {
-      this.ttl = ttl;
-      return (this);
-    }
-    public Builder image(Image image) {
-      this.image = image;
-      return (this);
-    }
-    public Builder textInput(TextInput textInput) {
-      this.textInput = textInput;
-      return (this);
-    }
-    public Builder skipHours(Integer[] skipHours) {
-      this.skipHours = skipHours;
-      return (this);
-    }
-    public Builder skipDays(String[] skipDays) {
-      this.skipDays = skipDays;
-      return (this);
-    }
-    public FeedModel build() {
-      return (new FeedModel(this));
-    }
+  @Override
+  public Boolean validate() {
+    if (!this.getTitle().isEmpty() && !this.getDescription().isEmpty() && !this.getLink().isEmpty())
+      return (false);
+    return true;
   }
 }

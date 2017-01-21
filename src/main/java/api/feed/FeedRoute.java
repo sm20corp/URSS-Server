@@ -8,7 +8,8 @@ public class FeedRoute {
   private static final String suffix = "/api/feeds";
 
   public static void attachRoutes(Router router) {
-    router.post(FeedRoute.suffix + "/").handler(FeedController::create);
+    router.post(FeedRoute.suffix + "/fromURL").handler(FeedController::create);
+    router.post(FeedRoute.suffix + "/").handler(FeedController::createModel);
     router.get(FeedRoute.suffix + "/:id").handler(FeedController::show);
     router.put(FeedRoute.suffix + "/:id").handler(FeedController::update);
     router.patch(FeedRoute.suffix + "/:id").handler(FeedController::update);
