@@ -6,7 +6,7 @@ Follow these instructions from the root of this repository to set it up and runn
 * Set a $SECRET env variable
 * Generate JWT key "$> keytool -genseckey -keystore keystore.jceks -storetype jceks -storepass $SECRET -keyalg HMacSHA256 -keysize 2048 -alias HS256 -keypass $SECRET"
 * Run a local database "$> mongod &"
-* Build and test "$> mvn clean package"
+* Build "$> mvn clean package -Dmaven.test.skip=true" OR build & test "$> mvn clean package"
 * Run "$> java -jar target/Server-1.0.0-fat.jar"
 
 # Docker powered
@@ -14,7 +14,7 @@ Follow these instructions from the root of this repository to deploy this server
 * Install docker-engine and docker-compose on your operating system
 * Set a $SECRET env variable
 * Generate JWT key "$> keytool -genseckey -keystore keystore.jceks -storetype jceks -storepass $SECRET -keyalg HMacSHA256 -keysize 2048 -alias HS256 -keypass $SECRET"
-* Build and test "$> mvn clean package"
+* Build "$> mvn clean package -Dmaven.test.skip=true"
 * Build images "$> docker-compose build"
 * Deploy "$> docker-compose up -d"
 

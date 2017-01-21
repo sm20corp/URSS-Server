@@ -16,6 +16,7 @@ import urss.server.components.MongoDB;
 import urss.server.auth.AuthService;
 import urss.server.api.credential.CredentialRoute;
 import urss.server.api.article.ArticleRoute;
+import urss.server.api.feed.FeedRoute;
 
 public class Server extends AbstractVerticle {
   private static Server instance = null;
@@ -65,6 +66,9 @@ public class Server extends AbstractVerticle {
     this.router.route("/api/users/*").handler(authRedirect);
     this.router.route("/api/histories/*").handler(authRedirect);
     this.router.route("/api/credentials/:id").handler(authRedirect);
+    this.router.route(HttpMethod.PUT, "/api/articles/:id").handler(authRedirect);
+    this.router.route(HttpMethod.PATCH, "/api/articles/:id").handler(authRedirect);
+    this.router.route(HttpMethod.DELETE, "/api/articles/:id").handler(authRedirect);
     this.router.route(HttpMethod.GET, "/api/credentials/").handler(authRedirect);
   }
 
@@ -73,7 +77,7 @@ public class Server extends AbstractVerticle {
 
     CredentialRoute.attachRoutes(this.router);
     ArticleRoute.attachRoutes(this.router);
-    //FeedRoute.attachRoutes(this.router);
+    FeedRoute.attachRoutes(this.router);
     //HistoryRoute.attachRoutes(this.router);
     //UserRoute.attachRoutes(this.router);
   }
