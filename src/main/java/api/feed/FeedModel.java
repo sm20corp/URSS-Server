@@ -104,8 +104,10 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
 
   @Override
   public Boolean validate() {
+
     if (!this.getTitle().isEmpty() && !this.getDescription().isEmpty() && !this.getLink().isEmpty())
       return (false);
     return true;
   }
+
 }

@@ -38,7 +38,7 @@ public class CredentialModel extends AModel<CredentialModel> implements IModel<C
     return BCrypt.checkpw(password, getPassword());
   }
 
-  private String encryptPassword(String password) {
+  public static String encryptPassword(String password) {
     return BCrypt.hashpw(password, BCrypt.gensalt(CredentialModel.bcryptLogRounds));
   }
 
