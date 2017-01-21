@@ -48,7 +48,7 @@ public class ArticleController {
     }
   }
 
-  public static void create(RoutingContext rc) {
+  public static void create(RoutingContext ctx) {
     JsonObject body = ctx.getBodyAsJson();
     System.out.println("params: " + ctx.request().params());
     System.out.println("body: " + body);
@@ -84,7 +84,7 @@ public class ArticleController {
     });
   }
 
-  public static void show(RoutingContext rc) {
+  public static void show(RoutingContext ctx) {
     String id = ctx.request().getParam("id");
 
     MongoDB.getInstance().getClient().findOne(
@@ -107,7 +107,7 @@ public class ArticleController {
 
           ctx.response()
           .putHeader("content-type", "application/json; charset=utf-8")
-          .end(credential.encodePrettily());
+          .end(article.encodePrettily());
           return ;
         }
         else {
@@ -119,7 +119,7 @@ public class ArticleController {
     );
   }
 
-  public static void update(RoutingContext rc) {
+  public static void update(RoutingContext ctx) {
     JsonObject body = ctx.getBodyAsJson();
     System.out.println("params: " + ctx.request().params());
     System.out.println("body: " + body);
@@ -168,7 +168,7 @@ public class ArticleController {
     );
   }
 
-  public static void delete(RoutingContext rc) {
+  public static void delete(RoutingContext ctx) {
     String id = ctx.request().getParam("id");
 
     MongoDB.getInstance().getClient().removeDocuments(
@@ -195,7 +195,7 @@ public class ArticleController {
     );
   }
 
-  public static void list(RoutingContext rc) {
+  public static void list(RoutingContext ctx) {
     MongoDB.getInstance().getClient().runCommand(
       "find",
       new JsonObject()

@@ -46,19 +46,19 @@ public class ArticleModel extends AModel<ArticleModel> implements IModel<Article
   private String comments;
 
   public ArticleModel() {
-    ArticleModel(defaultFeedId, defaultTitle, defaultLink, defaultDescription,
+    this(defaultFeedId, defaultTitle, defaultLink, defaultDescription,
                  defaultPubDate, defaultAuthor, defaultComments);
   }
 
   public ArticleModel(String feedId, String title, String link,
                       String description, String pubDate) {
-    ArticleModel(feedId, title, link, description, pubDate,
+    this(feedId, title, link, description, pubDate,
                  defaultAuthor, defaultComments);
   }
 
   public ArticleModel(String feedId, String title, String link,
                       String description, String pubDate, String author) {
-    ArticleModel(feedId, title, link, description, pubDate, author,
+    this(feedId, title, link, description, pubDate, author,
                  defaultComments);
   }
 

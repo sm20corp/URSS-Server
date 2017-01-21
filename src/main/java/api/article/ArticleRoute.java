@@ -2,6 +2,7 @@ package urss.server.api.article;
 
 import io.vertx.ext.web.Router;
 
+import urss.server.auth.AuthService;
 import urss.server.api.article.ArticleController;
 
 public class ArticleRoute {
