@@ -34,16 +34,4 @@ public class MongoDB extends ADatabaseClient<MongoClient> {
     }
     return instance;
   }
-
-  /*
-   * If we go for a full abstraction of the database, we should do an interface
-   * and define all methods here
-   */
-
-  // create
-  // getOne
-  // getAll
-  // update
-  // delete
-  // ...
 }
