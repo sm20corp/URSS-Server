@@ -138,6 +138,11 @@ public class CredentialController {
         update.put(rField, body.getString(rField));
       }
     }
+    for (String oField : CredentialModel.optionalFields) {
+      if (body.containsKey(oField)) {
+        update.put(oField, body.getString(oField));
+      }
+    }
 
     if (update.containsKey("password")) {
       update.put("password", CredentialModel.encryptPassword(update.getString("password")));

@@ -66,6 +66,9 @@ public class Server extends AbstractVerticle {
     this.router.route("/api/users/*").handler(authRedirect);
     this.router.route("/api/histories/*").handler(authRedirect);
     this.router.route("/api/credentials/:id").handler(authRedirect);
+    this.router.route(HttpMethod.PUT, "/api/articles/:id").handler(authRedirect);
+    this.router.route(HttpMethod.PATCH, "/api/articles/:id").handler(authRedirect);
+    this.router.route(HttpMethod.DELETE, "/api/articles/:id").handler(authRedirect);
     this.router.route(HttpMethod.GET, "/api/credentials/").handler(authRedirect);
   }
 
