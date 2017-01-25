@@ -25,8 +25,46 @@ import com.rometools.rome.io.XmlReader;
 import urss.server.api.feed.FeedModel;
 
 public class FeedController {
-  public static void create(RoutingContext rc) {
-    JsonObject body = rc.getBodyAsJson();
+  public static void isAdmin(RoutingContext ctx) {
+    System.out.println("user principal: " + ctx.user().principal());
+    System.out.println("isAdmin: " + ctx.get("isAdmin"));
+
+    if ((boolean) ctx.get("isAdmin") == true) {
+      System.out.println("Access granted");
+
+      ctx.next();
+    }
+    else {
+      System.out.println("Access denied");
+      ctx.response()
+      .setStatusCode(HttpURLConnection.HTTP_UNAUTHORIZED)
+      .putHeader("content-type", "application/json; charset=utf-8")
+      .end(new JsonObject().put("message", "You must be admin to modify or delete this resource").encodePrettily());
+      return ;
+    }
+  }
+
+  public static void verifyProperties(RoutingContext ctx) {
+    System.out.println("verifyProperties");
+    JsonObject body = ctx.getBodyAsJson();
+
+    if (!JsonHandler.verifyProperties(body, FeedModel.requiredFields)) {
+      System.out.println("required fields not present in request's body");
+
+      ctx.response()
+      .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
+      .putHeader("content-type", "application/json; charset=utf-8")
+      .end(new JsonObject().put("message", "required fields not present in request's body").encodePrettily());
+      return ;
+    }
+    else {
+      System.out.println("properties verified");
+      ctx.next();
+    }
+  }
+
+  public static void create(RoutingContext ctx) {
+    JsonObject body = ctx.getBodyAsJson();
     String url = body.getString("url");
     System.out.println("url of the feed is: " + url);
     if (url != null && !url.isEmpty()) {
@@ -36,9 +74,9 @@ public class FeedController {
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed = input.build(new XmlReader(feedUrl));
 
-        //System.out.println(feed);
-        rc.put("feed", feed);
-        rc.reroute(HttpMethod.POST, "/api/feeds/");
+        System.out.println(feed);
+        ctx.put("feed", feed);
+        ctx.reroute(HttpMethod.POST, "/api/feeds/");
       }
       catch (Exception ex) {
         ex.printStackTrace();
@@ -46,19 +84,18 @@ public class FeedController {
       }
     }
     else {
-    System.out.println("feedModel validation failed");
+      System.out.println("feedModel validation failed");
 
-    rc.response()
-    .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
-    .putHeader("content-type", "application/json; charset=utf-8")
-    .end(new JsonObject().put("message", "feed validation failed").encodePrettily());
-    return ;
-    //rc.response().end("feed/create");
-  }
+      ctx.response()
+      .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
+      .putHeader("content-type", "application/json; charset=utf-8")
+      .end(new JsonObject().put("message", "feed validation failed").encodePrettily());
+      return ;
+    }
   }
 
-  public static void createModel(RoutingContext rc) {
-    SyndFeed feed = rc.remove("feed");
+  public static void createModel(RoutingContext ctx) {
+    SyndFeed feed = ctx.remove("feed");
 
     System.out.println("feed title " + feed.getTitle());
     System.out.println("feed description " + feed.getDescription());
@@ -87,7 +124,7 @@ public class FeedController {
     if (!model.validate()) {
       System.out.println("feedModel validation failed");
 
-      rc.response()
+      ctx.response()
       .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
       .putHeader("content-type", "application/json; charset=utf-8")
       .end(new JsonObject().put("message", "feed validation failed").encodePrettily());
@@ -96,7 +133,7 @@ public class FeedController {
     MongoDB.getInstance().getClient().insert("feeds", model.toJSON(), res -> {
       if (res.succeeded()) {
         System.out.println("res: " + res.result());
-        rc.response()
+        ctx.response()
         .setStatusCode(HttpURLConnection.HTTP_OK)
         .putHeader("content-type", "application/json; charset=utf-8")
         .end(new JsonObject().put("id", res.result()).encodePrettily());
@@ -104,14 +141,14 @@ public class FeedController {
       }
       else {
         System.out.println("FAIL: " + res.cause().getMessage());
-        rc.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
         return ;
       }
     });
   }
 
-  public static void show(RoutingContext rc) {
-    String id = rc.request().getParam("id");
+  public static void show(RoutingContext ctx) {
+    String id = ctx.request().getParam("id");
 
     MongoDB.getInstance().getClient().findOne(
       "feeds",
@@ -129,35 +166,136 @@ public class FeedController {
 
           if (feed == null) {
             feed = new JsonObject().put("message", "id not found in db");
-            rc.response().setStatusCode(HttpURLConnection.HTTP_NOT_FOUND);
+            ctx.response().setStatusCode(HttpURLConnection.HTTP_NOT_FOUND);
           }
           else {
-            rc.response().setStatusCode(HttpURLConnection.HTTP_OK);
+            ctx.response().setStatusCode(HttpURLConnection.HTTP_OK);
           }
 
-          rc.response()
+          ctx.response()
           .putHeader("content-type", "application/json; charset=utf-8")
           .end(feed.encodePrettily());
           return ;
         }
         else {
           System.out.println("FAIL: " + res.cause().getMessage());
-          rc.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
           return ;
         }
       }
     );
   }
 
-  public static void update(RoutingContext rc) {
-    rc.response().end("feed/update");
+  public static void update(RoutingContext ctx) {
+    JsonObject body = ctx.getBodyAsJson();
+    System.out.println("params: " + ctx.request().params());
+    System.out.println("body: " + body);
+    String id = ctx.request().getParam("id");
+    JsonObject query = new JsonObject();
+    query.put("_id", id);
+    JsonObject update = new JsonObject();
+
+    for (String rField : ArticleModel.requiredFields) {
+      if (body.containsKey(rField)) {
+        update.put(rField, body.getString(rField));
+      }
+    }
+    for (String oField : ArticleModel.optionalFields) {
+      if (body.containsKey(oField)) {
+        update.put(oField, body.getString(oField));
+      }
+    }
+
+    update = new JsonObject().put("$set", update);
+
+    System.out.println("updated value :" + update);
+
+    MongoDB.getInstance().getClient().updateCollection(
+      "feeds",
+      query,
+      update,
+      res -> {
+        if (res.succeeded()) {
+          JsonObject result = res.result().toJson();
+
+          System.out.println("result: " + result);
+
+          ctx.response()
+          .setStatusCode(HttpURLConnection.HTTP_NO_CONTENT)
+          .putHeader("content-type", "application/json; charset=utf-8")
+          .end();
+          return ;
+        }
+        else {
+          System.out.println("FAIL: " + res.cause().getMessage());
+          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+          return ;
+        }
+      }
+    );
   }
 
-  public static void delete(RoutingContext rc) {
-    rc.response().end("feed/delete");
+  public static void delete(RoutingContext ctx) {
+    String id = ctx.request().getParam("id");
+
+    MongoDB.getInstance().getClient().removeDocuments(
+      "feeds",
+      new JsonObject().put("_id", id),
+      res -> {
+        if (res.succeeded()) {
+          JsonObject result = res.result().toJson();
+
+          System.out.println("result: " + result);
+
+          ctx.response()
+          .setStatusCode(HttpURLConnection.HTTP_NO_CONTENT)
+          .putHeader("content-type", "application/json; charset=utf-8")
+          .end();
+          return ;
+        }
+        else {
+          System.out.println("FAIL: " + res.cause().getMessage());
+          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+          return ;
+        }
+      }
+    );
   }
 
-  public static void list(RoutingContext rc) {
-    rc.response().end("feed/list");
+  public static void list(RoutingContext ctx) {
+    MongoDB.getInstance().getClient().runCommand(
+      "find",
+      new JsonObject()
+      .put("find", "feeds"),
+      res -> {
+        if (res.succeeded()) {
+          JsonObject result = res.result();
+          JsonArray feeds = result.getJsonObject("cursor").getJsonArray("firstBatch");
+
+          System.out.println("all feeds: " + feeds);
+
+          if (feeds == null || feeds.size() <= 0) {
+            ctx.response()
+            .setStatusCode(HttpURLConnection.HTTP_NOT_FOUND)
+            .putHeader("content-type", "application/json; charset=utf-8")
+            .end(new JsonObject().put("message", "no article found").encodePrettily());
+            return ;
+          }
+          else {
+            ctx.response().setStatusCode(HttpURLConnection.HTTP_OK);
+          }
+
+          ctx.response()
+          .putHeader("content-type", "application/json; charset=utf-8")
+          .end(feeds.encodePrettily());
+          return ;
+        }
+        else {
+          System.out.println("FAIL: " + res.cause().getMessage());
+          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+          return ;
+        }
+      }
+    );
   }
 }
