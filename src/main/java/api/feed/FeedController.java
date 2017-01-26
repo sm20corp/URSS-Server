@@ -1,28 +1,31 @@
 package urss.server.api.feed;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.HttpURLConnection;
+
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.buffer.Buffer;
+
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonObject;
-import urss.server.components.JsonHandler;
 
-import java.util.*;
-
-import java.net.HttpURLConnection;
-import io.vertx.core.json.JsonObject;
-
-import urss.server.components.MongoDB;
-
-import java.net.URL;
-import java.io.InputStreamReader;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
+import urss.server.components.JsonHandler;
+import urss.server.components.MongoDB;
 import urss.server.api.feed.FeedModel;
+import urss.server.api.article.ArticleModel;
 
 public class FeedController {
   public static void isAdmin(RoutingContext ctx) {
@@ -64,6 +67,7 @@ public class FeedController {
   }
 
   public static void create(RoutingContext ctx) {
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     JsonObject body = ctx.getBodyAsJson();
     String url = body.getString("url");
     System.out.println("url of the feed is: " + url);
@@ -75,52 +79,92 @@ public class FeedController {
         SyndFeed feed = input.build(new XmlReader(feedUrl));
 
         System.out.println(feed);
-        ctx.put("feed", feed);
+
+        JsonArray articles = new JsonArray();
+        List<SyndEntry> entries = feed.getEntries();
+
+        for (SyndEntry entry : entries) {
+          JsonObject article = new JsonObject();
+
+          if (entry.getTitle() != null)
+            article.put("title", entry.getTitle());
+          if (entry.getLink() != null)
+            article.put("link", entry.getLink());
+          if (entry.getDescription() != null)
+            article.put("description", entry.getDescription().getValue());
+          if (entry.getPublishedDate() != null)
+            article.put("pubDate", dateFormat.format(entry.getPublishedDate()));
+          if (entry.getAuthor() != null)
+            article.put("author", entry.getAuthor());
+
+          ArticleModel model = JsonHandler.getInstance().fromJson(article.toString(), ArticleModel.class);
+
+          if (!model.validate()) {
+            System.out.println("articleModel validation failed");
+
+            ctx.response()
+            .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
+            .putHeader("content-type", "application/json; charset=utf-8")
+            .end(new JsonObject().put("message", "model validation failed").encodePrettily());
+            return ;
+          }
+
+          System.out.println("model toString: " + model);
+
+          MongoDB.getInstance().getClient().insert("articles", model.toJSON(), res -> {
+            if (res.succeeded()) {
+              String id = res.result();
+              System.out.println("id: " + id);
+
+              articles.add(id);
+            }
+            else {
+              System.out.println("FAIL: " + res.cause().getMessage());
+              ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+              return ;
+            }
+          });
+        }
+
+
+        JsonObject jsonFeed = new JsonObject();
+
+        jsonFeed
+        .put("title", feed.getTitle())
+        .put("link", feed.getLink())
+        .put("description", feed.getDescription())
+        .put("articles", articles);
+
+        ctx.setBody(Buffer.buffer(jsonFeed.toString()));
         ctx.reroute(HttpMethod.POST, "/api/feeds/");
       }
       catch (Exception ex) {
         ex.printStackTrace();
         System.out.println("ERROR: " + ex.getMessage());
+
+        ctx.response()
+        .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
+        .putHeader("content-type", "application/json; charset=utf-8")
+        .end(new JsonObject().put("message", "failed to fetch the requested rss feed").encodePrettily());
+        return ;
       }
     }
     else {
-      System.out.println("feedModel validation failed");
-
       ctx.response()
       .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
       .putHeader("content-type", "application/json; charset=utf-8")
-      .end(new JsonObject().put("message", "feed validation failed").encodePrettily());
+      .end(new JsonObject().put("message", "url property in body is missing").encodePrettily());
       return ;
     }
   }
 
   public static void createModel(RoutingContext ctx) {
-    SyndFeed feed = ctx.remove("feed");
+    JsonObject body = ctx.getBodyAsJson();
 
-    System.out.println("feed title " + feed.getTitle());
-    System.out.println("feed description " + feed.getDescription());
-    System.out.println("feed link " + feed.getLink());
-    List entries = feed.getEntries();
-		Iterator itEntries = entries.iterator();
+    System.out.println("body: " + body);
 
-		while (itEntries.hasNext()) {
-			SyndEntry entry = (SyndEntry) itEntries.next();
-      if (entry.getTitle() != null)
-		    System.out.println("{\nArticle Title: " + entry.getTitle());
-      if (entry.getLink() != null)
-		    System.out.println("Article Link: " + entry.getLink());
-			if (entry.getPublishedDate() != null)
-        System.out.println("Article Publish Date: " + entry.getPublishedDate());
-      if (entry.getEnclosures().size() > 0)
-        System.out.println("Article Image: " + entry.getEnclosures().get(0).getUrl());
-			if (entry.getDescription() != null)
-        System.out.println("Article Description: " + entry.getDescription().getValue() + "\n}");
-		}
-    JsonObject jo = new JsonObject();
-    jo.put("title", feed.getTitle());
-    jo.put("description", feed.getDescription());
-    jo.put("link", feed.getLink());
-    FeedModel model = JsonHandler.getInstance().fromJson(jo.toString(), FeedModel.class);
+    FeedModel model = JsonHandler.getInstance().fromJson(body.toString(), FeedModel.class);
+
     if (!model.validate()) {
       System.out.println("feedModel validation failed");
 
@@ -130,6 +174,13 @@ public class FeedController {
       .end(new JsonObject().put("message", "feed validation failed").encodePrettily());
       return ;
     }
+
+    System.out.println("model: " + model);
+
+    return ;
+
+    /*
+
     MongoDB.getInstance().getClient().insert("feeds", model.toJSON(), res -> {
       if (res.succeeded()) {
         System.out.println("res: " + res.result());
@@ -145,6 +196,7 @@ public class FeedController {
         return ;
       }
     });
+    */
   }
 
   public static void show(RoutingContext ctx) {
@@ -195,12 +247,12 @@ public class FeedController {
     query.put("_id", id);
     JsonObject update = new JsonObject();
 
-    for (String rField : ArticleModel.requiredFields) {
+    for (String rField : FeedModel.requiredFields) {
       if (body.containsKey(rField)) {
         update.put(rField, body.getString(rField));
       }
     }
-    for (String oField : ArticleModel.optionalFields) {
+    for (String oField : FeedModel.optionalFields) {
       if (body.containsKey(oField)) {
         update.put(oField, body.getString(oField));
       }

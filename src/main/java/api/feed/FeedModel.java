@@ -1,6 +1,7 @@
 package urss.server.api.feed;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import urss.server.components.IModel;
 import urss.server.components.AModel;
@@ -37,7 +38,7 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
   private TextInput textInput;
   private Integer[] skipHours;
   private String[] skipDays;
-  private List<ArticleModel> articles = {};
+  private List<String> articles = new ArrayList<String>();
 
   public FeedModel(String title, String link, String description) {
     this.title = title;
@@ -112,7 +113,7 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
     return (this.skipDays);
   }
 
-  public List<ArticleModel> getArticles() {
+  public List<String> getArticles() {
     return this.articles;
   }
 
@@ -121,12 +122,13 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
     return ("title: " + getTitle() +
             " - link: " + getLink() +
             " - description: " + getDescription() +
-            " - pubDate: " + getPubDate());
+            " - pubDate: " + getPubDate() +
+            " - articles: " + getArticles());
   }
 
   @Override
   public Boolean validate() {
-    if (!this.getTitle().isEmpty() && !this.getDescription().isEmpty() && !this.getLink().isEmpty())
+    if (this.getTitle().isEmpty() || this.getDescription().isEmpty() || this.getLink().isEmpty())
       return false;
     return true;
   }
