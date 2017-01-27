@@ -66,6 +66,49 @@ public class FeedController {
     }
   }
 
+  public static void insertArticles(RoutingContext ctx) {
+    JsonArray articles = ctx.get("articles");
+
+    if (articles.size() <= 0) {
+      ctx.next();
+    }
+    else {
+      JsonObject article = (JsonObject) articles.remove(0);
+      ArticleModel model = JsonHandler.getInstance().fromJson(article.toString(), ArticleModel.class);
+
+      if (!model.validate()) {
+        System.out.println("articleModel validation failed");
+
+        ctx.response()
+        .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
+        .putHeader("content-type", "application/json; charset=utf-8")
+        .end(new JsonObject().put("message", "model validation failed").encodePrettily());
+        return ;
+      }
+
+      MongoDB.getInstance().getClient().insert("articles", model.toJSON(), res -> {
+        if (res.succeeded()) {
+          String id = res.result();
+
+          ((JsonObject) ctx.get("jsonFeed")).getJsonArray("articles").add(id);
+          insertArticles(ctx);
+        }
+        else {
+          System.out.println("FAIL: " + res.cause().getMessage());
+          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+          return ;
+        }
+      });
+    }
+  }
+
+  public static void rerouteCreate(RoutingContext ctx) {
+    JsonObject jsonFeed = ctx.get("jsonFeed");
+
+    ctx.setBody(Buffer.buffer(jsonFeed.toString()));
+    ctx.reroute(HttpMethod.POST, "/api/feeds/");
+  }
+
   public static void create(RoutingContext ctx) {
     DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     JsonObject body = ctx.getBodyAsJson();
@@ -97,35 +140,8 @@ public class FeedController {
           if (entry.getAuthor() != null)
             article.put("author", entry.getAuthor());
 
-          ArticleModel model = JsonHandler.getInstance().fromJson(article.toString(), ArticleModel.class);
-
-          if (!model.validate()) {
-            System.out.println("articleModel validation failed");
-
-            ctx.response()
-            .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
-            .putHeader("content-type", "application/json; charset=utf-8")
-            .end(new JsonObject().put("message", "model validation failed").encodePrettily());
-            return ;
-          }
-
-          System.out.println("model toString: " + model);
-
-          MongoDB.getInstance().getClient().insert("articles", model.toJSON(), res -> {
-            if (res.succeeded()) {
-              String id = res.result();
-              System.out.println("id: " + id);
-
-              articles.add(id);
-            }
-            else {
-              System.out.println("FAIL: " + res.cause().getMessage());
-              ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
-              return ;
-            }
-          });
+          articles.add(article);
         }
-
 
         JsonObject jsonFeed = new JsonObject();
 
@@ -133,10 +149,12 @@ public class FeedController {
         .put("title", feed.getTitle())
         .put("link", feed.getLink())
         .put("description", feed.getDescription())
-        .put("articles", articles);
+        .put("articles", new JsonArray());
 
-        ctx.setBody(Buffer.buffer(jsonFeed.toString()));
-        ctx.reroute(HttpMethod.POST, "/api/feeds/");
+        ctx.put("articles", articles);
+        ctx.put("jsonFeed", jsonFeed);
+
+        ctx.next();
       }
       catch (Exception ex) {
         ex.printStackTrace();
@@ -161,8 +179,6 @@ public class FeedController {
   public static void createModel(RoutingContext ctx) {
     JsonObject body = ctx.getBodyAsJson();
 
-    System.out.println("body: " + body);
-
     FeedModel model = JsonHandler.getInstance().fromJson(body.toString(), FeedModel.class);
 
     if (!model.validate()) {
@@ -176,10 +192,6 @@ public class FeedController {
     }
 
     System.out.println("model: " + model);
-
-    return ;
-
-    /*
 
     MongoDB.getInstance().getClient().insert("feeds", model.toJSON(), res -> {
       if (res.succeeded()) {
@@ -196,7 +208,6 @@ public class FeedController {
         return ;
       }
     });
-    */
   }
 
   public static void show(RoutingContext ctx) {

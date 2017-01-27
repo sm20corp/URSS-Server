@@ -10,8 +10,10 @@ public class FeedRoute {
 
   public static void attachRoutes(Router router) {
     router.post(FeedRoute.suffix + "/fromURL").handler(FeedController::create);
+    router.post(FeedRoute.suffix + "/fromURL").handler(FeedController::insertArticles);
+    router.post(FeedRoute.suffix + "/fromURL").handler(FeedController::rerouteCreate);
 
-//    router.post(FeedRoute.suffix + "/").handler(FeedController::verifyProperties);
+    router.post(FeedRoute.suffix + "/").handler(FeedController::verifyProperties);
     router.post(FeedRoute.suffix + "/").handler(FeedController::createModel);
 
     router.get(FeedRoute.suffix + "/:id").handler(FeedController::show);
