@@ -30,9 +30,8 @@ COPY $HISTORIES $DATA_HOME/$HISTORIES
 COPY $USERS $DATA_HOME/$USERS
 
 # Mount data into database
-ENTRYPOINT ["sh", "-c"]
-CMD ["mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME",                       \
-     "--collection credentials --type json --file $DATA_HOME/$CREDENTIALS --jsonArray", \
+ENTRYPOINT ["mongoimport", "--host $DB_HOST --port $DB_PORT --db $DB_NAME"]
+CMD ["--collection credentials --type json --file $DATA_HOME/$CREDENTIALS --jsonArray", \
      "--collection articles --type json --file $DATA_HOME/$ARTICLES --jsonArray",       \
      "--collection feeds --type json --file $DATA_HOME/$FEEDS --jsonArray",             \
      "--collection histories --type json --file $DATA_HOME/$HISTORIES --jsonArray",     \
