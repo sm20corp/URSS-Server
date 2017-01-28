@@ -10,11 +10,6 @@ attributes not implemented
           name: String,
           domain: String
       } ],
-      enclosure: {
-          url: String,
-          length: Number,
-          type: String
-      },
       guid: {
           id: String,
           isPermaLink: Boolean
@@ -34,9 +29,13 @@ public class ArticleModel extends AModel<ArticleModel> implements IModel<Article
   private static final String defaultPubDate = "";
   private static final String defaultAuthor = "";
   private static final String defaultComments = "";
+  private static final String defaultEnclosureUrl = "";
+  private static final int defaultEnclosureLength = 0;
+  private static final String defaultEnclosureType = "";
   public static final String[] requiredFields = { "feedId", "title", "link",
                                                   "description", "pubDate" };
-  public static final String[] optionalFields = { "author", "comments" };
+  public static final String[] optionalFields = { "author", "comments", "enclosureUrl",
+                                                  "enclosureLength", "enclosureType"};
   private String feedId;
   private String title;
   private String link;
@@ -44,27 +43,34 @@ public class ArticleModel extends AModel<ArticleModel> implements IModel<Article
   private String pubDate;
   private String author;
   private String comments;
+  private String enclosureUrl;
+  private int enclosureLength;
+  private String enclosureType;
 
   public ArticleModel() {
     this(defaultFeedId, defaultTitle, defaultLink, defaultDescription,
-                 defaultPubDate, defaultAuthor, defaultComments);
+         defaultPubDate, defaultAuthor, defaultComments,
+         defaultEnclosureUrl, defaultEnclosureLength, defaultEnclosureType);
   }
 
   public ArticleModel(String feedId, String title, String link,
                       String description, String pubDate) {
-    this(feedId, title, link, description, pubDate,
-                 defaultAuthor, defaultComments);
+    this(feedId, title, link, description, pubDate, defaultAuthor,
+         defaultComments, defaultEnclosureUrl, defaultEnclosureLength,
+         defaultEnclosureType);
   }
 
   public ArticleModel(String feedId, String title, String link,
                       String description, String pubDate, String author) {
     this(feedId, title, link, description, pubDate, author,
-                 defaultComments);
+         defaultComments, defaultEnclosureUrl, defaultEnclosureLength,
+         defaultEnclosureType);
   }
 
   public ArticleModel(String feedId, String title, String link,
                       String description, String pubDate, String author,
-                      String comments) {
+                      String comments, String enclosureUrl, int enclosureLength,
+                      String enclosureType) {
     setFeedId(feedId);
     setTitle(title);
     setLink(link);
@@ -72,6 +78,9 @@ public class ArticleModel extends AModel<ArticleModel> implements IModel<Article
     setPubDate(pubDate);
     setAuthor(author);
     setComments(comments);
+    setEnclosureUrl(enclosureUrl);
+    setEnclosureLength(enclosureLength);
+    setEnclosureType(enclosureType);
   }
 
   public void setFeedId(String feedId) {
@@ -130,6 +139,30 @@ public class ArticleModel extends AModel<ArticleModel> implements IModel<Article
     return this.comments;
   }
 
+  public void setEnclosureUrl(String url) {
+    this.enclosureUrl = url;
+  }
+
+  public String getEnclosureUrl() {
+    return this.enclosureUrl;
+  }
+
+  public void setEnclosureLength(int length) {
+    this.enclosureLength = length;
+  }
+
+  public int getEnclosureLength() {
+    return this.enclosureLength;
+  }
+
+  public void setEnclosureType(String type) {
+    this.enclosureType = type;
+  }
+
+  public String getEnclosureType() {
+    return this.enclosureType;
+  }
+
   @Override
   public String toString() {
     return ("feedId: " + getFeedId() +
@@ -138,7 +171,10 @@ public class ArticleModel extends AModel<ArticleModel> implements IModel<Article
             " - description: " + getDescription() +
             " - pubDate: " + getPubDate() +
             " - author: " + getAuthor() +
-            " - comments: " + getComments());
+            " - comments: " + getComments() +
+            " - enclosureUrl: " + getEnclosureUrl() +
+            " - enclosureLength: " + getEnclosureLength() +
+            " - enclosureType: " + getEnclosureType());
   }
 
   @Override
