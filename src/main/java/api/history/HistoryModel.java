@@ -1,0 +1,50 @@
+package urss.server.api.history;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import urss.server.components.IModel;
+import urss.server.components.AModel;
+
+public class HistoryModel extends AModel<HistoryModel> implements IModel<HistoryModel> {
+  public static final String[] requiredFields = {  };
+  public static final String[] optionalFields = { "bookmarks", "viewedArticles" };
+  private List<String> bookmarks;
+  private List<String> viewedArticles;
+
+  public HistoryModel() {
+    this(new ArrayList<String>(), new ArrayList<String>());
+  }
+
+  public HistoryModel(List<String> bookmarks, List<String> viewedArticles) {
+    setBookmarks(bookmarks);
+    setViewedArticles(viewedArticles);
+  }
+
+  public void setBookmarks(List<String> bookmarks) {
+    this.bookmarks = bookmarks;
+  }
+
+  public List<String> getBookmarks() {
+    return this.bookmarks;
+  }
+
+  public void setViewedArticles(List<String> viewedArticles) {
+    this.viewedArticles = viewedArticles;
+  }
+
+  public List<String> getViewedArticles() {
+    return this.viewedArticles;
+  }
+
+  @Override
+  public String toString() {
+    return ("bookmaks: " + getBookmarks() +
+            " - viewedArticles: " + getViewedArticles());
+  }
+
+  @Override
+  public Boolean validate() {
+    return true;
+  }
+}

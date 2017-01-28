@@ -9,7 +9,6 @@ import urss.server.api.feed.Category;
 import urss.server.api.feed.Cloud;
 import urss.server.api.feed.Image;
 import urss.server.api.feed.TextInput;
-import urss.server.api.article.ArticleModel;
 
 public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
   public static final String[] requiredFields = { "title", "link", "description" };

@@ -17,6 +17,7 @@ import urss.server.auth.AuthService;
 import urss.server.api.credential.CredentialRoute;
 import urss.server.api.article.ArticleRoute;
 import urss.server.api.feed.FeedRoute;
+import urss.server.api.history.HistoryRoute;
 
 public class Server extends AbstractVerticle {
   private static Server instance = null;
@@ -78,7 +79,7 @@ public class Server extends AbstractVerticle {
     CredentialRoute.attachRoutes(this.router);
     ArticleRoute.attachRoutes(this.router);
     FeedRoute.attachRoutes(this.router);
-    //HistoryRoute.attachRoutes(this.router);
+    HistoryRoute.attachRoutes(this.router);
     //UserRoute.attachRoutes(this.router);
   }
 
