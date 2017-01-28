@@ -10,6 +10,7 @@ services:
     restart: "always"
   seed-db:
     build: ./script/seed-db
+    network_mode: "host"
     depends_on:
       - db
   urss:
