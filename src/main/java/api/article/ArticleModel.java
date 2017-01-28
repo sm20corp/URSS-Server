@@ -30,7 +30,7 @@ public class ArticleModel extends AModel<ArticleModel> implements IModel<Article
   private static final String defaultAuthor = "";
   private static final String defaultComments = "";
   private static final String defaultEnclosureUrl = "";
-  private static final int defaultEnclosureLength = 0;
+  private static final long defaultEnclosureLength = 0;
   private static final String defaultEnclosureType = "";
   public static final String[] requiredFields = { "feedId", "title", "link",
                                                   "description", "pubDate" };
@@ -44,7 +44,7 @@ public class ArticleModel extends AModel<ArticleModel> implements IModel<Article
   private String author;
   private String comments;
   private String enclosureUrl;
-  private int enclosureLength;
+  private long enclosureLength;
   private String enclosureType;
 
   public ArticleModel() {
@@ -69,7 +69,7 @@ public class ArticleModel extends AModel<ArticleModel> implements IModel<Article
 
   public ArticleModel(String feedId, String title, String link,
                       String description, String pubDate, String author,
-                      String comments, String enclosureUrl, int enclosureLength,
+                      String comments, String enclosureUrl, long enclosureLength,
                       String enclosureType) {
     setFeedId(feedId);
     setTitle(title);
@@ -147,11 +147,11 @@ public class ArticleModel extends AModel<ArticleModel> implements IModel<Article
     return this.enclosureUrl;
   }
 
-  public void setEnclosureLength(int length) {
+  public void setEnclosureLength(long length) {
     this.enclosureLength = length;
   }
 
-  public int getEnclosureLength() {
+  public long getEnclosureLength() {
     return this.enclosureLength;
   }
 
