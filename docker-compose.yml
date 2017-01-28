@@ -8,10 +8,10 @@ services:
       - "27017:27017"
     network_mode: "host"
     restart: "always"
-#  seed-db:
-#    build: ./script/seed-db
-#    depends_on:
-#      - db
+  seed-db:
+    build: ./script/seed-db
+    depends_on:
+      - db
   urss:
     build: .
     ports:

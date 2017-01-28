@@ -21,4 +21,4 @@ RUN keytool -genseckey -keystore keystore.jceks -storetype jceks -storepass ${SE
 
 # Launch the verticle
 ENTRYPOINT ["sh", "-c"]
-CMD ["sleep 2; java -jar $VERTICLE_FILE"]
+CMD ["java -jar $VERTICLE_FILE"]
