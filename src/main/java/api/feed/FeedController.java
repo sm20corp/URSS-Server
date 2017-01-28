@@ -19,6 +19,7 @@ import io.vertx.ext.web.Router;
 
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEnclosure;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
@@ -139,6 +140,12 @@ public class FeedController {
             article.put("pubDate", dateFormat.format(entry.getPublishedDate()));
           if (entry.getAuthor() != null)
             article.put("author", entry.getAuthor());
+          if (entry.getEnclosures() != null && entry.getEnclosures().size() > 0) {
+            SyndEnclosure enclosure = entry.getEnclosures().get(0);
+            article.put("enclosureUrl", enclosure.getUrl());
+            article.put("enclosureLength", enclosure.getLength());
+            article.put("enclosureType", enclosure.getType());
+          }
 
           articles.add(article);
         }
@@ -260,12 +267,12 @@ public class FeedController {
 
     for (String rField : FeedModel.requiredFields) {
       if (body.containsKey(rField)) {
-        update.put(rField, body.getString(rField));
+        update.put(rField, body.getValue(rField));
       }
     }
     for (String oField : FeedModel.optionalFields) {
       if (body.containsKey(oField)) {
-        update.put(oField, body.getString(oField));
+        update.put(oField, body.getValue(oField));
       }
     }
 

@@ -135,12 +135,12 @@ public class CredentialController {
 
     for (String rField : CredentialModel.requiredFields) {
       if (body.containsKey(rField)) {
-        update.put(rField, body.getString(rField));
+        update.put(rField, body.getValue(rField));
       }
     }
     for (String oField : CredentialModel.optionalFields) {
       if (body.containsKey(oField)) {
-        update.put(oField, body.getString(oField));
+        update.put(oField, body.getValue(oField));
       }
     }
 

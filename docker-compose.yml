@@ -1,5 +1,17 @@
 version: '2'
 services:
+  db:
+    image: mongo:3.0.4
+    volumes:
+      - "/data/db"
+    ports:
+      - "27017:27017"
+    network_mode: "host"
+    restart: "always"
+#  seed-db:
+#    build: ./script/seed-db
+#    depends_on:
+#      - db
   urss:
     build: .
     ports:
@@ -8,11 +20,11 @@ services:
      - db
     network_mode: "host"
     restart: "always"
-  db:
-    image: mongo:3.0.4
-    volumes:
-      - "/data/db"
+  front-db:
+    image: mrvautin/adminmongo:latest
     ports:
-      - "27017:27017"
+      - "1234:1234"
+    depends_on:
+      - db
     network_mode: "host"
     restart: "always"
