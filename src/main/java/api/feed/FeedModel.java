@@ -1,13 +1,25 @@
 package urss.server.api.feed;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import urss.server.components.IModel;
 import urss.server.components.AModel;
 import urss.server.api.feed.Category;
 import urss.server.api.feed.Cloud;
 import urss.server.api.feed.Image;
 import urss.server.api.feed.TextInput;
+import urss.server.api.article.ArticleModel;
 
 public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
+  public static final String[] requiredFields = { "title", "link", "description" };
+  public static final String[] optionalFields = { "language", "copyright",
+                                                  "managingEditor", "webMaster",
+                                                  "pubDate", "lastBuildDate",
+                                                  "categoryArray", "generator",
+                                                  "docs", "cloud", "ttl", "image",
+                                                  "textInput", "skipHours",
+                                                  "skipDays" };
   private String title;
   private String link;
   private String description;
@@ -26,8 +38,7 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
   private TextInput textInput;
   private Integer[] skipHours;
   private String[] skipDays;
-  //Add private member array of article
-
+  private List<String> articles = new ArrayList<String>();
 
   public FeedModel(String title, String link, String description) {
     this.title = title;
@@ -102,12 +113,23 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
     return (this.skipDays);
   }
 
-  @Override
-  public Boolean validate() {
-
-    if (!this.getTitle().isEmpty() && !this.getDescription().isEmpty() && !this.getLink().isEmpty())
-      return (false);
-    return true;
+  public List<String> getArticles() {
+    return this.articles;
   }
 
+  @Override
+  public String toString() {
+    return ("title: " + getTitle() +
+            " - link: " + getLink() +
+            " - description: " + getDescription() +
+            " - pubDate: " + getPubDate() +
+            " - articles: " + getArticles());
+  }
+
+  @Override
+  public Boolean validate() {
+    if (this.getTitle().isEmpty() || this.getDescription().isEmpty() || this.getLink().isEmpty())
+      return false;
+    return true;
+  }
 }
