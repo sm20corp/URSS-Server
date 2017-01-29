@@ -18,7 +18,6 @@ public class FeedRoute {
 
     router.get(FeedRoute.suffix + "/:id").handler(FeedController::show);
 
-
     router.put(FeedRoute.suffix + "/fromURL").handler(FeedController::create);
     router.put(FeedRoute.suffix + "/fromURL").handler(FeedController::updateArticles);
     router.put(FeedRoute.suffix + "/fromURL").handler(FeedController::rerouteUpdate);
