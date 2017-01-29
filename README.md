@@ -3,21 +3,20 @@ URSS Server, fetch RSS feeds (Java, Vert.x, MongoDB, Docker, JUnit, javadoc, ROM
 
 # Maven powered
 Follow these instructions from the root of this repository to set it up and running.
-* Set a $SECRET env variable
-* Generate JWT key "$> keytool -genseckey -keystore keystore.jceks -storetype jceks -storepass $SECRET -keyalg HMacSHA256 -keysize 2048 -alias HS256 -keypass $SECRET"
-* Run a local database "$> mongod &"
-* Build "$> mvn clean package -Dmaven.test.skip=true" OR build & test "$> mvn clean package"
-* Run "$> java -jar target/Server-1.0.0-fat.jar"
+* Build "$> ./script/build.sh"
+* Run "$> ./script/run.sh"
 
 # Docker powered
 Follow these instructions from the root of this repository to deploy this server on containers.
 * Install docker-engine and docker-compose on your operating system
-* Set a $SECRET env variable
-* Generate JWT key "$> keytool -genseckey -keystore keystore.jceks -storetype jceks -storepass $SECRET -keyalg HMacSHA256 -keysize 2048 -alias HS256 -keypass $SECRET"
-* Build "$> mvn clean package -Dmaven.test.skip=true"
-* Build images "$> docker-compose build"
-* Deploy "$> docker-compose up -d"
+* Build "$> ./script/build.sh"
+* Deploy "$> ./script/deploy.sh"
 
+# Run tests
+Follow these instructions from the root of this repository to build and test the project.
+* Build "$> ./script/build.sh"
+* Run a local database "$> mongod &"
+* Test "$> ./script/test.sh"
 ---
 
 __Epitech project__

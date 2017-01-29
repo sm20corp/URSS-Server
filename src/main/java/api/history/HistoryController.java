@@ -1,15 +1,16 @@
-package urss.server.api.article;
+package urss.server.api.history;
 
+import java.net.HttpURLConnection;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.web.RoutingContext;
-import java.net.HttpURLConnection;
 
 import urss.server.components.MongoDB;
 import urss.server.components.JsonHandler;
-import urss.server.api.article.ArticleModel;
+import urss.server.api.history.HistoryModel;
 
-public class ArticleController {
+public class HistoryController {
   public static void isAdmin(RoutingContext ctx) {
     System.out.println("user principal: " + ctx.user().principal());
     System.out.println("isAdmin: " + ctx.get("isAdmin"));
@@ -29,11 +30,42 @@ public class ArticleController {
     }
   }
 
+  public static void isMine(RoutingContext ctx) {
+    String id = ctx.request().getParam("id");
+
+    System.out.println("user principal: " + ctx.user().principal());
+    System.out.println("you want this id: " + id);
+    System.out.println("isAdmin: " + ctx.get("isAdmin"));
+
+    // TODO
+    /** code property verification **/
+    if ((boolean) ctx.get("isAdmin") == true || ctx.user().principal().getString("credentialId").equals(id)) {
+      System.out.println("Access granted");
+
+      ctx.next();
+    }
+    else {
+      System.out.println("Access denied");
+      ctx.response()
+      .setStatusCode(HttpURLConnection.HTTP_UNAUTHORIZED)
+      .putHeader("content-type", "application/json; charset=utf-8")
+      .end(new JsonObject().put("message", "You are not admin and you are requesting a resource that isn't yours").encodePrettily());
+      return ;
+    }
+  }
+
+  public static void ok(RoutingContext ctx) {
+    ctx.response()
+    .setStatusCode(HttpURLConnection.HTTP_OK)
+    .putHeader("content-type", "application/json; charset=utf-8")
+    .end(ctx.getBodyAsJson().encodePrettily());
+  }
+
   public static void verifyProperties(RoutingContext ctx) {
     System.out.println("verifyProperties");
     JsonObject body = ctx.getBodyAsJson();
 
-    if (!JsonHandler.verifyProperties(body, ArticleModel.requiredFields)) {
+    if (!JsonHandler.verifyProperties(body, HistoryModel.requiredFields)) {
       System.out.println("required fields not present in request's body");
 
       ctx.response()
@@ -53,10 +85,10 @@ public class ArticleController {
     System.out.println("params: " + ctx.request().params());
     System.out.println("body: " + body);
 
-    ArticleModel model = JsonHandler.getInstance().fromJson(ctx.getBodyAsJson().toString(), ArticleModel.class);
+    HistoryModel model = JsonHandler.getInstance().fromJson(ctx.getBodyAsJson().toString(), HistoryModel.class);
 
     if (!model.validate()) {
-      System.out.println("articleModel validation failed");
+      System.out.println("HistoryModel validation failed");
 
       ctx.response()
       .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
@@ -67,61 +99,36 @@ public class ArticleController {
 
     System.out.println("model toString: " + model);
 
-    MongoDB.getInstance().getClient().findOne(
-      "articles",
-      model.toJSON(),
-      new JsonObject(),
-      findResult -> {
-        if (findResult.succeeded()) {
-          JsonObject article = findResult.result();
+    MongoDB.getInstance().getClient().insert("histories", model.toJSON(), res -> {
+      if (res.succeeded()) {
+        System.out.println("res: " + res.result());
 
-          if (article == null) {
-            MongoDB.getInstance().getClient().insert("articles", model.toJSON(), insertResult -> {
-              if (insertResult.succeeded()) {
-                System.out.println("res: " + insertResult.result());
-                ctx.response()
-                .setStatusCode(HttpURLConnection.HTTP_OK)
-                .putHeader("content-type", "application/json; charset=utf-8")
-                .end(new JsonObject().put("id", insertResult.result()).encodePrettily());
-                return ;
-              }
-              else {
-                System.out.println("FAIL: " + insertResult.cause().getMessage());
-                ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
-                return ;
-              }
-            });
-          }
-          else {
-            ctx.response()
-            .setStatusCode(HttpURLConnection.HTTP_OK)
-            .putHeader("content-type", "application/json; charset=utf-8")
-            .end(article.encodePrettily());
-            return ;
-          }
-        }
-        else {
-          System.out.println("FAIL: " + findResult.cause().getMessage());
-          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
-          return ;
-        }
+        ctx.setBody(Buffer.buffer(new JsonObject().put("id", res.result()).toString()));
+        ctx.next();
       }
-    );
+      else {
+        System.out.println("FAIL: " + res.cause().getMessage());
+        ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        return ;
+      }
+    });
   }
 
   public static void show(RoutingContext ctx) {
     String id = ctx.request().getParam("id");
 
     MongoDB.getInstance().getClient().findOne(
-      "articles",
+      "histories",
       new JsonObject().put("_id", id),
       new JsonObject().put("_id", false),
       res -> {
         if (res.succeeded()) {
-          JsonObject article = res.result();
+          JsonObject history = res.result();
 
-          if (article == null) {
-            article = new JsonObject().put("message", "id not found in db");
+          System.out.println("history found: " + history);
+
+          if (history == null) {
+            history = new JsonObject().put("message", "id not found in db");
             ctx.response().setStatusCode(HttpURLConnection.HTTP_NOT_FOUND);
           }
           else {
@@ -130,7 +137,7 @@ public class ArticleController {
 
           ctx.response()
           .putHeader("content-type", "application/json; charset=utf-8")
-          .end(article.encodePrettily());
+          .end(history.encodePrettily());
           return ;
         }
         else {
@@ -151,12 +158,12 @@ public class ArticleController {
     query.put("_id", id);
     JsonObject update = new JsonObject();
 
-    for (String rField : ArticleModel.requiredFields) {
+    for (String rField : HistoryModel.requiredFields) {
       if (body.containsKey(rField)) {
         update.put(rField, body.getValue(rField));
       }
     }
-    for (String oField : ArticleModel.optionalFields) {
+    for (String oField : HistoryModel.optionalFields) {
       if (body.containsKey(oField)) {
         update.put(oField, body.getValue(oField));
       }
@@ -167,7 +174,7 @@ public class ArticleController {
     System.out.println("updated value :" + update);
 
     MongoDB.getInstance().getClient().updateCollection(
-      "articles",
+      "histories",
       query,
       update,
       res -> {
@@ -195,7 +202,7 @@ public class ArticleController {
     String id = ctx.request().getParam("id");
 
     MongoDB.getInstance().getClient().removeDocuments(
-      "articles",
+      "histories",
       new JsonObject().put("_id", id),
       res -> {
         if (res.succeeded()) {
@@ -222,15 +229,15 @@ public class ArticleController {
     MongoDB.getInstance().getClient().runCommand(
       "find",
       new JsonObject()
-      .put("find", "articles"),
+      .put("find", "histories"),
       res -> {
         if (res.succeeded()) {
           JsonObject result = res.result();
-          JsonArray articles = result.getJsonObject("cursor").getJsonArray("firstBatch");
+          JsonArray histories = result.getJsonObject("cursor").getJsonArray("firstBatch");
 
-          System.out.println("all articles: " + articles);
+          System.out.println("all histories: " + histories);
 
-          if (articles == null || articles.size() <= 0) {
+          if (histories == null || histories.size() <= 0) {
             ctx.response()
             .setStatusCode(HttpURLConnection.HTTP_NOT_FOUND)
             .putHeader("content-type", "application/json; charset=utf-8")
@@ -243,7 +250,7 @@ public class ArticleController {
 
           ctx.response()
           .putHeader("content-type", "application/json; charset=utf-8")
-          .end(articles.encodePrettily());
+          .end(histories.encodePrettily());
           return ;
         }
         else {

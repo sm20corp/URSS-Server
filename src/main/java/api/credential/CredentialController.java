@@ -1,9 +1,10 @@
 package urss.server.api.credential;
 
+import java.net.HttpURLConnection;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.web.RoutingContext;
-import java.net.HttpURLConnection;
 
 import urss.server.components.MongoDB;
 import urss.server.components.JsonHandler;
@@ -17,7 +18,7 @@ public class CredentialController {
     System.out.println("you want this id: " + id);
     System.out.println("isAdmin: " + ctx.get("isAdmin"));
 
-    if ((boolean) ctx.get("isAdmin") == true || ctx.user().principal().getString("userId").equals(id)) {
+    if ((boolean) ctx.get("isAdmin") == true || ctx.user().principal().getString("credentialId").equals(id)) {
       System.out.println("Access granted");
 
       ctx.next();
@@ -51,6 +52,13 @@ public class CredentialController {
     }
   }
 
+  public static void ok(RoutingContext ctx) {
+    ctx.response()
+    .setStatusCode(HttpURLConnection.HTTP_OK)
+    .putHeader("content-type", "application/json; charset=utf-8")
+    .end(ctx.getBodyAsJson().encodePrettily());
+  }
+
   public static void create(RoutingContext ctx) {
     JsonObject body = ctx.getBodyAsJson();
     System.out.println("params: " + ctx.request().params());
@@ -70,21 +78,46 @@ public class CredentialController {
 
     System.out.println("model toString: " + model);
 
-    MongoDB.getInstance().getClient().insert("credentials", model.toJSON(), res -> {
-      if (res.succeeded()) {
-        System.out.println("res: " + res.result());
-        ctx.response()
-        .setStatusCode(HttpURLConnection.HTTP_OK)
-        .putHeader("content-type", "application/json; charset=utf-8")
-        .end(new JsonObject().put("id", res.result()).encodePrettily());
-        return ;
+    MongoDB.getInstance().getClient().findOne(
+      "credentials",
+      model.toJSON(),
+      new JsonObject()
+      .put("password", false)
+      .put("role", false),
+      findResult -> {
+        if (findResult.succeeded()) {
+          JsonObject credential = findResult.result();
+
+          if (credential == null) {
+            MongoDB.getInstance().getClient().insert("credentials", model.toJSON(), insertResult -> {
+              if (insertResult.succeeded()) {
+                System.out.println("res: " + insertResult.result());
+
+                ctx.setBody(Buffer.buffer(new JsonObject().put("id", insertResult.result()).toString()));
+                ctx.next();
+              }
+              else {
+                System.out.println("FAIL: " + insertResult.cause().getMessage());
+                ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                return ;
+              }
+            });
+          }
+          else {
+            ctx.response()
+            .setStatusCode(HttpURLConnection.HTTP_OK)
+            .putHeader("content-type", "application/json; charset=utf-8")
+            .end(credential.encodePrettily());
+            return ;
+          }
+        }
+        else {
+          System.out.println("FAIL: " + findResult.cause().getMessage());
+          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+          return ;
+        }
       }
-      else {
-        System.out.println("FAIL: " + res.cause().getMessage());
-        ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
-        return ;
-      }
-    });
+    );
   }
 
   public static void show(RoutingContext ctx) {
@@ -135,12 +168,12 @@ public class CredentialController {
 
     for (String rField : CredentialModel.requiredFields) {
       if (body.containsKey(rField)) {
-        update.put(rField, body.getString(rField));
+        update.put(rField, body.getValue(rField));
       }
     }
     for (String oField : CredentialModel.optionalFields) {
       if (body.containsKey(oField)) {
-        update.put(oField, body.getString(oField));
+        update.put(oField, body.getValue(oField));
       }
     }
 
