@@ -76,7 +76,7 @@ public class Worker {
                 })
               .end(Buffer.buffer(
                 "{" +
-                "\"url\":\"" + feed.getString("link") + "\"" +
+                "\"url\":\"" + feed.getString("url") + "\"" +
                 "}"));
             }
           });
