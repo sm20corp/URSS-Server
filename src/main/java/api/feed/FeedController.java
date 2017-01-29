@@ -109,11 +109,8 @@ public class FeedController {
               });
             }
             else {
-              ctx.response()
-              .setStatusCode(HttpURLConnection.HTTP_OK)
-              .putHeader("content-type", "application/json; charset=utf-8")
-              .end(article.encodePrettily());
-              return ;
+              ((JsonObject) ctx.get("jsonFeed")).getJsonArray("articles").add(articleRes.getString("_id"));
+              insertArticles(ctx);
             }
           }
           else {
