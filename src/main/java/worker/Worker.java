@@ -61,11 +61,9 @@ public class Worker {
       System.out.println("updating ...");
       this.httpClient.get(4242, "localhost", "/api/feeds",
         response -> {
-          System.out.println("a response !");
           response.bodyHandler(body -> {
             System.out.println("handler fired");
             JsonArray feeds = body.toJsonArray();
-            System.out.println("body: " + feeds);
             for (int i = 0; i < feeds.size(); i++) {
               JsonObject feed = feeds.getJsonObject(i);
 
@@ -81,10 +79,6 @@ public class Worker {
                 "\"url\":\"" + feed.getString("link") + "\"" +
                 "}"));
             }
-            /*
-            for (JsonObject feed : feeds) {
-            }
-            */
           });
         })
       .end();
