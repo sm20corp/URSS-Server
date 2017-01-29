@@ -64,9 +64,11 @@ public class Worker {
           System.out.println("a response !");
           response.bodyHandler(body -> {
             System.out.println("handler fired");
-            List<JsonObject> feeds = body.toJsonArray().getList();
+            JsonArray feeds = body.toJsonArray();
             System.out.println("body: " + feeds);
-            for (JsonObject feed : feeds) {
+            for (int i = 0; i < feeds.size(); i++) {
+              JsonObject feed = feeds.getJsonObject(i);
+
               System.out.println("feed url: " + feed.getString("link"));
               this.httpClient.put(4242, "localhost", "/api/feeds/fromURL",
                 updateResponse -> {
@@ -79,6 +81,10 @@ public class Worker {
                 "\"url\":\"" + feed.getString("link") + "\"" +
                 "}"));
             }
+            /*
+            for (JsonObject feed : feeds) {
+            }
+            */
           });
         })
       .end();
