@@ -258,6 +258,8 @@ public class FeedController {
   public static void updateArticles(RoutingContext ctx) {
     JsonArray articles = ctx.get("articles");
 
+    System.out.println("updateArticles ! " + articles.size());
+
     if (articles.size() <= 0) {
       ctx.next();
     }
