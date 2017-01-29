@@ -119,7 +119,7 @@ public class UserController {
     MongoDB.getInstance().getClient().findOne(
       "users",
       new JsonObject().put("_id", id),
-      new JsonObject().put("_id", false),
+      new JsonObject().put("_id", false).put("lastConnected", false),
       res -> {
         if (res.succeeded()) {
           JsonObject user = res.result();

@@ -1,0 +1,103 @@
+<!doctype html><html>  <head>    <meta charset="utf-8">    <base href="../">    <title>JSDoc: source : feed-display.js</title>    <link href="css/prettify-tomorrow.css" type="text/css" rel="stylesheet">    <link href="css/site.css" type="text/css" rel="stylesheet">  </head>  <body ng-app="">    <nav id="toc">      <input placeholder="Filter" id="filter-input" class="col12 block field" type="text">      <div class="nav-wrapper">      <h2><a href="index.html">Index</a></h2>      <ul class="module">        <!-- app -->        <h2 class="module">          <a chref="" ng-click="moduleapp = !moduleapp">            module: app          </a>          <i ng-cloak="" ng-show="moduleapp">+</i>        </h2>        <li id="app" ng-hide="moduleapp">          <ul class="group">            <h2>              <a href="" ng-click="appcontroller = !appcontroller">                controller              </a>              <i ng-cloak="" ng-show="appcontroller">+</i>            </h2>            <ul ng-hide="appcontroller">              <li>                <a href="app.favoriteFeedCtrl.html">favoriteFeedCtrl</a>              </li><li>                <a href="app.feedListCtrl.html">feedListCtrl</a>              </li><li>                <a href="app.feedListUserCtrl.html">feedListUserCtrl</a>              </li><li>                <a href="app.loginCtrl.html">loginCtrl</a>              </li><li>                <a href="app.unreadFeedCtrl.html">unreadFeedCtrl</a>              </li>            </ul>          </ul>        </li>      </ul>      </div>    </nav>    <div id="content" class="page-wrap">      <h1 class="title">        source : feed-display.js      </h1>      <div id="main" class="big-container">        <!-- source code html -->        <article>          <pre class="prettyprint source linenums"><code>'use strict';
+/**
+   * @memberof app
+   * @ngdoc controller
+   * @name feedListCtrl
+   * @param $scope {service} Controller scope
+   * @param $http {service} Http service
+   * @param $window {service} Reference to browser window object
+   * @param $q {service} A service that helps you run functions asynchronously and use their return values (or exceptions) when they are done processing
+   * @param $sce {service} Service that provides Strict Contextual Escaping services to AngularJS
+   */
+angular.module('urssApp').controller('feedListCtrl', function($scope, $http, $window, $q, $sce) {
+    $scope.articles = [];
+    $scope.error = "false";
+    $scope.test = function(newSelectedArticle) {
+      $scope.selectedArticle = $sce.trustAsResourceUrl(newSelectedArticle);
+    }
+    /**
+      * getFeed function
+      * Make a POST request to get the id of the feed and then we make a call to get the articles
+      * @memberof feedListCtrl
+      */
+    $scope.getFeed = function() {
+      $scope.error = "false";
+        if ($scope.feedUrl) {
+            console.log($scope.feedUrl);
+            $http({
+                url: 'http://79.137.78.39:4242/api/feeds/fromURL',
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    'url': $scope.feedUrl,
+                }
+            }).then(function mySucces(response) {
+                var feedId = response.data.id;
+                var feedId2 = response.data._id;
+                console.log("success{" + feedId + "}"+ feedId2 + "}");
+                if (feedId) {
+                  getFeedArticles(feedId);
+                }
+                else {
+                  getFeedArticles(feedId2);
+                  }
+            }, function myError(response) {
+                $scope.error = "true";
+                $scope.articles = [];
+                console.log("Fail get feed" + response.statusText);
+            });
+        }
+    }
+    /**
+      * getFeedArticles
+      * Make a GET request to get all the articles of the feed in an array
+      * @memberof feedListCtrl
+      * @param {String} feedId id of the selected feed
+      */
+    function getFeedArticles(feedId) {
+        var url = "http://79.137.78.39:4242/api/feeds/" + feedId;
+        $http({
+            url: url,
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                'url': $scope.feedUrl,
+            }
+        }).then(function mySucces(response) {
+            var articlesIdArray = response.data.articles;
+            console.log(articlesIdArray);
+            getArticlesInfo(articlesIdArray);
+        }, function myError(response) {
+            console.log("Fail" + response.statusText);
+        });
+    }
+    /**
+      * get articles info
+      * chain GET request for all articles in order to get their content
+      * use $q to know when all the request are finished
+      * @memberof feedListCtrl
+      * @param {Array} articlesIdArray array of articles
+      */
+    function getArticlesInfo(articlesIdArray) {
+        var arr = [];
+        for (var a = 0; a &lt; articlesIdArray.length; ++a) {
+          var url = "http://79.137.78.39:4242/api/articles/" + articlesIdArray[a];
+            arr.push($http({
+                url: url,
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }));
+        }
+        $q.all(arr).then(function(ret) {
+          $scope.articles = ret;
+          console.log("finished" + $scope.articles);
+        });
+    }
+});
+</code></pre>        </article>        <!-- index.html -->        <!-- class files -->      </div>      <footer style="clear:both">        Documentation generated by        <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>        using        <a href="https://github.com/allenhwkim/angular-jsdoc">Angular-JSDoc template</a>      </footer>    </div>    <script src="js/prettify.js"></script>    <script src="js/angular.min.js"></script>    <script src="js/site.js"></script>    <!--%= prettyJson %-->    <script>      prettyPrint();      var lineNo = window.location.hash.match(/#line([0-9]+)$/);      lineNo && document.querySelector("ol li:nth-child("+(lineNo[1])+")").scrollIntoView();    </script>  </body></html>

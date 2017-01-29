@@ -115,7 +115,7 @@ public class ArticleController {
     MongoDB.getInstance().getClient().findOne(
       "articles",
       new JsonObject().put("_id", id),
-      new JsonObject().put("_id", false),
+      new JsonObject(),
       res -> {
         if (res.succeeded()) {
           JsonObject article = res.result();

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html ng-app="urssApp" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>URSS Feading reader</title>
+
+    <!-- Bootstrap -->
+    <link href="/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- bootstrap-progressbar -->
+    <link href="/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- jVectorMap -->
+    <link href="production/css/maps/jquery-jvectormap-2.0.3.css" rel="stylesheet" />
+
+    <!-- Custom Theme Style -->
+    <link href="/build/css/custom.min.css" rel="stylesheet">
+
+    <!-- jQuery -->
+    <script src="/vendors/jquery/dist/jquery.min.js"></script>
+
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+        <script src="bower_components/angular-route/angular-route.js"></script>
+        <script src="app.js"></script>
+        <script src="controller/feed-display.js"></script>
+        <script src="controller/login.js"></script>
+        <script src="controller/feed-display-user.js"></script>
+        <script src="controller/favorite-feed.js"></script>
+        <script src="controller/unread-feed.js"></script>
+
+        <base href="#">
+</head>
+
+<body class="nav-md">
+
+    <div ng-view>
+    </div>
+
+
+
+    <!-- Bootstrap -->
+    <script src="/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="/vendors/fastclick/lib/fastclick.js"></script>
+
+    <!-- Skycons -->
+    <script src="/vendors/skycons/skycons.js"></script>
+
+    <!-- jVectorMap -->
+    <script src="production/js/maps/jquery-jvectormap-2.0.3.min.js"></script>
+
+
+
+
+</body>
+
+</html>

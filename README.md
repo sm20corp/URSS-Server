@@ -17,6 +17,7 @@ Follow these instructions from the root of this repository to build and test the
 * Build "$> ./script/build.sh"
 * Run a local database "$> mongod &"
 * Test "$> ./script/test.sh"
+
 ---
 
 __Epitech project__
