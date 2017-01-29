@@ -18,11 +18,14 @@ import urss.server.api.credential.CredentialRoute;
 import urss.server.api.article.ArticleRoute;
 import urss.server.api.feed.FeedRoute;
 import urss.server.api.history.HistoryRoute;
+import urss.server.api.user.UserRoute;
+import urss.server.worker.Worker;
 
 public class Server extends AbstractVerticle {
   private static Server instance = null;
   private Router router;
   private MongoDB db;
+  private Worker worker;
 
   @Override
   public void start(Future<Void> fut) {
@@ -30,10 +33,13 @@ public class Server extends AbstractVerticle {
 
     this.db = MongoDB.getInstance();// default instance points to localhost:27017 to "urss" db
     this.router = Router.router(vertx);
+    this.worker = new Worker();// default delay 10 seconds
 
     configure();
     setupAuthentication();
     setupRoutes();
+
+    vertx.setPeriodic(this.worker.getDelay(), this.worker::refreshFeeds);
 
     vertx.createHttpServer().requestHandler(router::accept).listen(4242, result -> {
       if (result.succeeded()) {
@@ -89,7 +95,7 @@ public class Server extends AbstractVerticle {
     ArticleRoute.attachRoutes(this.router);
     FeedRoute.attachRoutes(this.router);
     HistoryRoute.attachRoutes(this.router);
-    //UserRoute.attachRoutes(this.router);
+    UserRoute.attachRoutes(this.router);
   }
 
   public static Server getInstance() {
