@@ -67,7 +67,7 @@ public class Worker {
             for (int i = 0; i < feeds.size(); i++) {
               JsonObject feed = feeds.getJsonObject(i);
 
-              System.out.println("feed url: " + feed.getString("link"));
+              System.out.println("feed url: " + feed.getString("url"));
               this.httpClient.put(4242, "localhost", "/api/feeds/fromURL",
                 updateResponse -> {
                   updateResponse.handler(updateBody -> {

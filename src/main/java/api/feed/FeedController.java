@@ -151,6 +151,7 @@ public class FeedController {
         JsonObject jsonFeed = new JsonObject();
 
         jsonFeed
+        .put("url", url)
         .put("title", feed.getTitle())
         .put("link", feed.getLink())
         .put("description", feed.getDescription())
