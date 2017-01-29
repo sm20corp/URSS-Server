@@ -114,7 +114,7 @@ public class FeedController {
     DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     JsonObject body = ctx.getBodyAsJson();
     String url = body.getString("url");
-    System.out.println("url of the feed is: " + url);
+    
     if (url != null && !url.isEmpty()) {
       try {
         URL feedUrl = new URL(url);

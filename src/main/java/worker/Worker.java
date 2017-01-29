@@ -74,6 +74,7 @@ public class Worker {
                     System.out.println("updateResponse body: " + updateBody);
                   });
                 })
+              .putHeader("content-type", "application/json; charset=utf-8")
               .end(Buffer.buffer(
                 "{" +
                 "\"url\":\"" + feed.getString("url") + "\"" +
