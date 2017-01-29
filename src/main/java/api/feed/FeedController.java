@@ -333,14 +333,13 @@ public class FeedController {
   }
 
   public static void list(RoutingContext ctx) {
-    MongoDB.getInstance().getClient().runCommand(
-      "find",
-      new JsonObject()
-      .put("find", "feeds"),
+    MongoDB.getInstance().getClient().find(
+      "feeds",
+      new JsonObject(),
       res -> {
         if (res.succeeded()) {
-          JsonObject result = res.result();
-          JsonArray feeds = result.getJsonObject("cursor").getJsonArray("firstBatch");
+          List<JsonObject> results = res.result();
+          JsonArray feeds = new JsonArray(results);
 
           System.out.println("all feeds: " + feeds);
 

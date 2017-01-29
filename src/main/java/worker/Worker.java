@@ -37,32 +37,19 @@ public class Worker {
           for (JsonObject feedUrl : results) {
             System.out.println("meh: " + feedUrl);
             this.httpClient.post(4242, "localhost", "/api/feeds/fromURL",
-                                 response -> {
-                                   response.handler(body -> {
-                                     System.out.println("response body: " + body);
-                                   });
-                                 })
-                                 .end(Buffer.buffer("{" +
-                                                    "\"url\":\"" + feedUrl.getString("url") + "\"" +
-                                                    "}"));
+              response -> {
+                response.handler(body -> {
+                  System.out.println("response body: " + body);
+                });
+              })
+            .end(Buffer.buffer(
+              "{" +
+              "\"url\":\"" + feedUrl.getString("url") + "\"" +
+              "}"));
           }
         }
       }
     );
-
-    /*
-
-    this.httpClient.post(4242, "localhost", "/auth/local/",
-                                    response -> {
-      response.handler(body -> {
-        System.out.println("response: " + body);
-      });
-    })
-    .end(Buffer.buffer("{" +
-                        "\"email\":\"farouko@justicier.com\"," +
-                        "\"password\":\"toto123\"" +
-                       "}"));
-     */
   }
 
   public void refreshFeeds(Long id) {
@@ -70,6 +57,14 @@ public class Worker {
     if (this.httpClient == null) {
       initFeeds();
     }
+
+    this.httpClient.get(4242, "localhost", "/api/feeds",
+      response -> {
+        response.handler(body -> {
+          System.out.println("response body: " + body);
+        });
+      })
+    .end();
   }
 
   public void setDelay(long delay) {
