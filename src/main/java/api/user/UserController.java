@@ -419,7 +419,7 @@ public class UserController {
                       System.out.println("result: " + result);
 
                       ctx.response()
-                      .setStatusCode(HttpURLConnection.HTTP_NO_CONTENT)
+                      .setStatusCode(HttpURLConnection.HTTP_OK)
                       .putHeader("content-type", "application/json; charset=utf-8")
                       .end();
                       return ;

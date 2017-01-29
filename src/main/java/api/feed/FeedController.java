@@ -87,19 +87,44 @@ public class FeedController {
         return ;
       }
 
-      MongoDB.getInstance().getClient().insert("articles", model.toJSON(), res -> {
-        if (res.succeeded()) {
-          String id = res.result();
+      MongoDB.getInstance().getClient().findOne(
+        "articles",
+        model.toJSON(),
+        new JsonObject(),
+        findResult -> {
+          if (findResult.succeeded()) {
+            JsonObject article = findResult.result();
 
-          ((JsonObject) ctx.get("jsonFeed")).getJsonArray("articles").add(id);
-          insertArticles(ctx);
+            if (article == null) {
+              MongoDB.getInstance().getClient().insert("articles", model.toJSON(), insertResult -> {
+                if (insertResult.succeeded()) {
+                  String id = insertResult.result();
+
+                  ((JsonObject) ctx.get("jsonFeed")).getJsonArray("articles").add(id);
+                  insertArticles(ctx);
+                }
+                else {
+                  System.out.println("FAIL: " + insertResult.cause().getMessage());
+                  ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                  return ;
+                }
+              });
+            }
+            else {
+              ctx.response()
+              .setStatusCode(HttpURLConnection.HTTP_OK)
+              .putHeader("content-type", "application/json; charset=utf-8")
+              .end(article.encodePrettily());
+              return ;
+            }
+          }
+          else {
+            System.out.println("FAIL: " + findResult.cause().getMessage());
+            ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            return ;
+          }
         }
-        else {
-          System.out.println("FAIL: " + res.cause().getMessage());
-          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
-          return ;
-        }
-      });
+      );
     }
   }
 
