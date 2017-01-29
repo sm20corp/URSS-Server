@@ -1,7 +1,6 @@
 package urss.server.api.feed;
 
 import java.util.*;
-import java.sql.Timestamp;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.HttpURLConnection;
@@ -158,7 +157,7 @@ public class FeedController {
           if (entry.getDescription() != null)
             article.put("description", entry.getDescription().getValue());
           if (entry.getPublishedDate() != null)
-            article.put("pubDate", new Timestamp(entry.getPublishedDate().getTime()));
+            article.put("pubDate", entry.getPublishedDate().getTime() / 1000);
           if (entry.getAuthor() != null)
             article.put("author", entry.getAuthor());
           if (entry.getEnclosures() != null && entry.getEnclosures().size() > 0) {
