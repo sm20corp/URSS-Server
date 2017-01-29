@@ -63,7 +63,8 @@ public class Server extends AbstractVerticle {
     .allowedHeader("Access-Control-Allow-Credentials")
     .allowedHeader("Access-Control-Allow-Origin")
     .allowedHeader("Access-Control-Allow-Headers")
-    .allowedHeader("Content-Type"));
+    .allowedHeader("Content-Type")
+    .allowedHeader("Authorization"));
     this.router.route().handler(BodyHandler.create());
   }
 
