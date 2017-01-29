@@ -304,6 +304,13 @@ public class FeedController {
                 }
               });
             }
+            else {
+              ctx.response()
+              .setStatusCode(HttpURLConnection.HTTP_NOT_MODIFIED)
+              .putHeader("content-type", "application/json; charset=utf-8")
+              .end(new JsonObject().put("message", "nothing to update sry :()").encodePrettily());
+              return ;
+            }
           }
           else {
             System.out.println("FAIL: " + res.cause().getMessage());
