@@ -94,9 +94,9 @@ public class ArticleController {
           }
           else {
             ctx.response()
-            .setStatusCode(HttpURLConnection.HTTP_CONFLICT)
+            .setStatusCode(HttpURLConnection.HTTP_OK)
             .putHeader("content-type", "application/json; charset=utf-8")
-            .end(new JsonObject().put("message", "article already exists").encodePrettily());
+            .end(article.encodePrettily());
             return ;
           }
         }
