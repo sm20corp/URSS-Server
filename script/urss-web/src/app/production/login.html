@@ -1,0 +1,119 @@
+
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col menu_fixed">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title">
+                        <a class="site_title"><i class="fa fa-star"></i> <span>URSS</span></a>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+
+
+                    <br />
+
+                    <!-- sidebar menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                          <!--  <h3>Déjà membre ?</h3> -->
+
+                            <ul class="nav side-menu">
+
+                                </li>
+                                <li id="feed_visitor">
+                                    <a href="#/"><i class="fa fa-rss"></i> Consulter un Feed <span class="fa"></span></a>
+                                </li>
+                                <li id="login_row_minified" class="current-page active">
+                                    <a href="#login"><i class="fa fa-sign-in"></i> Se connecter <span class="fa"></span></a>
+                                </li>
+                                <li id="subscribe_row_minified">
+                                    <a href="#subscribe"><i class="fa fa-user-plus"></i> S'inscrire <span class="fa"></span></a>
+                                </li>
+                            </ul>
+
+                        </div>
+
+                    </div>
+                    <!-- /sidebar menu -->
+
+                    <!-- /menu footer buttons -->
+                    <div class="sidebar-footer hidden-small">
+                    </div>
+                    <!-- /menu footer buttons -->
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav class="" role="navigation">
+                        <div class="nav toggle" style="padding-bottom:14px">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+
+            <!-- page content -->
+            <div class="right_col" role="main" style="height: 100vw;">
+                <!-- top tiles -->
+                <div class="page-title">
+
+
+                </div>
+                <!-- /top tiles -->
+                <div>
+                    <div class="login_wrapper">
+                        <div class="animate form login_form">
+                            <section class="login_content">
+
+                                <h1 style="color: #D32F2F;">Connexion</h1>
+                                <form name="myform" ng-controller="loginCtrl" ng-submit="login()" novalidate>
+                                    <div>
+                                        <input type="text" class="form-control" placeholder="Nom d'utilisateur" ng-model="username" required />
+                                    </div>
+                                    <div>
+                                        <input type="password" class="form-control" placeholder="Mot de passe" ng-model="password" required />
+                                    </div>
+                                    <div style="text-shadow:none;padding: 2px;color:#ffffff" class="alert alert-danger alert-dismissible fade in" role="alert" ng-show="error == 'true'">
+                                        Email ou mot de passe incorrect
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-default " ng-disabled="myform.$invalid">Se connecter</button>
+                                    </div>
+                                </form>
+                                <div class="clearfix"></div>
+                                <div class="separator">
+                                    <p class="change_link">Pas encore inscrit ?
+                                        <a href="#subscribe" class="to_register"> Créer son compte </a>
+                                    </p>
+
+
+                                    <div class="clearfix"></div>
+
+
+
+                                </div>
+
+
+                            </section>
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+                <!-- /page content -->
+
+                <!-- footer content -->
+
+                <!-- /footer content -->
+            </div>
+        </div>
+    </div>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
