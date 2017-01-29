@@ -38,12 +38,10 @@ angular.module('urssApp').controller('favoriteFeedCtrl', function($scope, $http,
                         'Authorization': token
                     }
                 }).then(function mySucces(response) {
-                    console.log("success add feed to history");
                     getHistoryWithUserId(history);
 
                 }, function myError(response) {
                     $scope.error = "true";
-                    console.log("Fail get feed" + response.statusText);
                 });
             }
         }
@@ -62,12 +60,12 @@ angular.module('urssApp').controller('favoriteFeedCtrl', function($scope, $http,
                     'Authorization': token
                 }
             }).then(function mySucces(response) {
-                console.log("success add feed to history");
+
                 getHistoryWithUserId(history);
 
             }, function myError(response) {
                 $scope.error = "true";
-                console.log("Fail get feed" + response.statusText);
+
             });
         }
     }
@@ -97,7 +95,7 @@ angular.module('urssApp').controller('favoriteFeedCtrl', function($scope, $http,
         userId = $window.localStorage['user-id'];
         token = 'Bearer ' + token;
         var url = 'http://79.137.78.39:4242/api/users/' + userId;
-        console.log(token);
+
         $http({
             url: url,
             method: "GET",
@@ -107,12 +105,12 @@ angular.module('urssApp').controller('favoriteFeedCtrl', function($scope, $http,
             }
         }).then(function mySucces(response) {
             history = response.data.history;
-            console.log("history = " + history);
+
             getHistoryWithUserId(history);
 
         }, function myError(response) {
 
-            console.log("Fail" + response.statusText);
+
         });
     }
     init();
@@ -136,12 +134,11 @@ angular.module('urssApp').controller('favoriteFeedCtrl', function($scope, $http,
             var bookmarks = response.data.bookmarks;
             starredArticles = response.data.starredArticles;
             unreadArticles = response.data.viewedArticles;
-            console.log("history = " + bookmarks);
-            console.log("history = " + bookmarks);
+
             getFeeds(bookmarks);
         }, function myError(response) {
 
-            console.log("Fail" + response.statusText);
+
         });
     }
 
@@ -155,7 +152,7 @@ angular.module('urssApp').controller('favoriteFeedCtrl', function($scope, $http,
         var arr = [];
 
         for (var a = 0; a < feeds.length; ++a) {
-            console.log("the feed =" + feeds[a]);
+
             var url = "http://79.137.78.39:4242/api/feeds/" + feeds[a];
             arr.push($http({
                 url: url,
@@ -168,7 +165,7 @@ angular.module('urssApp').controller('favoriteFeedCtrl', function($scope, $http,
 
         $q.all(arr).then(function(ret) {
             //$scope.articles = ret;
-            console.log(ret[0]);
+
             getArticlesFromFeeds(ret);
         });
     }
@@ -182,9 +179,9 @@ angular.module('urssApp').controller('favoriteFeedCtrl', function($scope, $http,
      */
     function getArticlesFromFeeds(feeds) {
         var arr = [];
-        console.log(feeds.length);
+
         for (var a = 0; a < feeds.length; ++a) {
-            console.log("the new feed =" + feeds[a].data.articles);
+
             var articleArray = feeds[a].data.articles;
             for (var b = 0; b < articleArray.length; ++b) {
 
@@ -201,7 +198,7 @@ angular.module('urssApp').controller('favoriteFeedCtrl', function($scope, $http,
         }
 
         $q.all(arr).then(function(ret) {
-            console.log(ret[0]);
+            
             $scope.articles = ret;
         });
     }

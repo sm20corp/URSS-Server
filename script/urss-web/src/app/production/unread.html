@@ -75,7 +75,7 @@
           <!-- /top tiles -->
           <!-- /top tiles -->
           <div ng-repeat="article in articles | orderBy:  '-data.pubDate'" class="row">
-              <div ng-if="unreadSelected(article.data._id) == 1" class="col-md-12 col-sm-12 col-xs-12">
+              <div ng-if="unreadSelected(article.data._id) == -1" class="col-md-12 col-sm-12 col-xs-12">
                   <div class="dashboard_graph">
 
                       <div class="row x_title">

@@ -52,12 +52,12 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
                         'Authorization': token
                     }
                 }).then(function mySucces(response) {
-                    console.log("success add feed to history");
+
                     getHistoryWithUserId(history);
 
                 }, function myError(response) {
                     $scope.error = "true";
-                    console.log("Fail get feed" + response.statusText);
+
                 });
             }
         }
@@ -76,12 +76,12 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
                           'Authorization': token
                       }
                   }).then(function mySucces(response) {
-                      console.log("success add feed to history");
+
                       getHistoryWithUserId(history);
 
                   }, function myError(response) {
                       $scope.error = "true";
-                      console.log("Fail get feed" + response.statusText);
+
                   });
               }
           }
@@ -104,10 +104,10 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
         $scope.username = $window.localStorage['username'];
         token = $window.localStorage['access-token'];
         userId = $window.localStorage['user-id'];
-        //console.log($scope.username + "-" + token + "-" + userId);
+
         token = 'Bearer ' + token;
         var url = 'http://79.137.78.39:4242/api/users/' + userId;
-        console.log(token);
+        
         $http({
             url: url,
             method: "GET",
@@ -117,12 +117,12 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
             }
         }).then(function mySucces(response) {
             history = response.data.history;
-            console.log("history = " + history);
+
             getHistoryWithUserId(history);
 
         }, function myError(response) {
 
-            console.log("Fail" + response.statusText);
+
         });
     }
     init();
@@ -146,11 +146,11 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
             var bookmarks = response.data.bookmarks;
             starredArticles = response.data.starredArticles;
             unreadArticles = response.data.viewedArticles;
-            console.log("history = " + bookmarks);
+
             getFeeds(bookmarks);
         }, function myError(response) {
 
-            console.log("Fail" + response.statusText);
+
         });
     }
 
@@ -164,7 +164,7 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
         var arr = [];
 
         for (var a = 0; a < feeds.length; ++a) {
-            console.log("the feed =" + feeds[a]);
+
             var url = "http://79.137.78.39:4242/api/feeds/" + feeds[a];
             arr.push($http({
                 url: url,
@@ -177,7 +177,7 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
 
         $q.all(arr).then(function(ret) {
             //$scope.articles = ret;
-            console.log(ret[0]);
+
             getArticlesFromFeeds(ret);
         });
     }
@@ -191,9 +191,9 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
      */
     function getArticlesFromFeeds(feeds) {
         var arr = [];
-        console.log(feeds.length);
+
         for (var a = 0; a < feeds.length; ++a) {
-            console.log("the new feed =" + feeds[a].data.articles);
+
             var articleArray = feeds[a].data.articles;
             for (var b = 0; b < articleArray.length; ++b) {
 
@@ -210,7 +210,7 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
         }
 
         $q.all(arr).then(function(ret) {
-            console.log(ret[0]);
+
             $scope.articles = ret;
         });
     }
@@ -222,7 +222,7 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
     $scope.getFeed = function() {
             $scope.error = "false";
             if ($scope.feedUrl) {
-                console.log("new feed " + $scope.feedUrl);
+
                 $http({
                     url: 'http://79.137.78.39:4242/api/feeds/fromURL',
                     method: "POST",
@@ -234,12 +234,12 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
                     }
                 }).then(function mySucces(response) {
                     var feedId = response.data.id;
-                    console.log("success{" + feedId + "}");
+
                     addFeedToHistory(feedId);
 
                 }, function myError(response) {
                     $scope.error = "true";
-                    console.log("Fail get feed" + response.statusText);
+
                 });
             }
         }
@@ -259,12 +259,12 @@ angular.module('urssApp').controller('feedListUserCtrl', function($scope, $http,
                 'Authorization': token
             }
         }).then(function mySucces(response) {
-            console.log("success add feed to history");
+
             getHistoryWithUserId(history);
 
         }, function myError(response) {
             $scope.error = "true";
-            console.log("Fail get feed" + response.statusText);
+
         });
     }
 });

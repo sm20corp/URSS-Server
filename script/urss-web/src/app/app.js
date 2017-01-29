@@ -28,8 +28,8 @@ angular.module('urssApp', ['ngRoute']).config(['$locationProvider', '$routeProvi
 }]).
 run(function($rootScope, $location, $window) {
   $rootScope.$on("$routeChangeStart", function(event, next, current) {
-    console.log(next.templateUrl);
     
+
     var isLogged = $window.localStorage['is-logged'];
     if (isLogged && isLogged == 'false') {
       if (next.templateUrl == "production/main.html" || next.templateUrl == "production/favorite.html"

@@ -23,7 +23,7 @@ angular.module('urssApp').controller('loginCtrl', function($scope, $http, $windo
       */
     $scope.login = function() {
       $scope.error = "false";
-        console.log("login result = " + "{" + $scope.username + ", " + $scope.password + "}");
+
             $http({
                 url: 'http://79.137.78.39:4242/auth/local',
                 method: "POST",
@@ -37,7 +37,7 @@ angular.module('urssApp').controller('loginCtrl', function($scope, $http, $windo
             }).then(function mySucces(response) {
                 var accessToken = response.data.token;
                 var userId = response.data.userId;
-                console.log("Success " + accessToken);
+
                 $window.localStorage['is-logged'] = "true";
                 $window.localStorage['access-token'] = accessToken;
                 $window.localStorage['username'] = $scope.username;
@@ -45,7 +45,7 @@ angular.module('urssApp').controller('loginCtrl', function($scope, $http, $windo
                 $location.path("/main");
             }, function myError(response) {
                 $scope.error = "true";
-                console.log("login error not found " + response.statusText);
+
             });
 
     };
@@ -56,7 +56,7 @@ angular.module('urssApp').controller('loginCtrl', function($scope, $http, $windo
       * @memberof loginCtrl
       */
     $scope.subscribe = function() {
-        console.log("subscribe result = " + "{" + $scope.username + ", " + $scope.password + ", " + $scope.password_verify + "}");
+        
 
         $http({
             url: 'http://79.137.78.39:4242/api/users/createAccount',
@@ -70,12 +70,12 @@ angular.module('urssApp').controller('loginCtrl', function($scope, $http, $windo
             }
         }).then(function mySucces(response) {
             var accessToken = response.data.id;
-            console.log("Success " + accessToken);
+
             $window.localStorage['access-token'] = accessToken;
             $location.path("/login");
         }, function myError(response) {
 
-            console.log("Fail" + response.statusText);
+
         });
     };
 }).directive("passwordVerify", function() {
