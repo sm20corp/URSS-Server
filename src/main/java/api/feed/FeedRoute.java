@@ -18,21 +18,22 @@ public class FeedRoute {
 
     router.get(FeedRoute.suffix + "/:id").handler(FeedController::show);
 
-    router.put(FeedRoute.suffix + "/:id").handler(AuthService.getInstance()::hasAuthority);
-    router.put(FeedRoute.suffix + "/:id").handler(FeedController::isAdmin);
-    router.put(FeedRoute.suffix + "/:id").handler(FeedController::update);
 
     router.put(FeedRoute.suffix + "/fromURL").handler(FeedController::create);
     router.put(FeedRoute.suffix + "/fromURL").handler(FeedController::updateArticles);
     router.put(FeedRoute.suffix + "/fromURL").handler(FeedController::rerouteUpdate);
 
-    router.patch(FeedRoute.suffix + "/:id").handler(AuthService.getInstance()::hasAuthority);
-    router.patch(FeedRoute.suffix + "/:id").handler(FeedController::isAdmin);
-    router.patch(FeedRoute.suffix + "/:id").handler(FeedController::update);
+    router.put(FeedRoute.suffix + "/:id").handler(AuthService.getInstance()::hasAuthority);
+    router.put(FeedRoute.suffix + "/:id").handler(FeedController::isAdmin);
+    router.put(FeedRoute.suffix + "/:id").handler(FeedController::update);
 
     router.patch(FeedRoute.suffix + "/fromURL").handler(FeedController::create);
     router.patch(FeedRoute.suffix + "/fromURL").handler(FeedController::updateArticles);
     router.patch(FeedRoute.suffix + "/fromURL").handler(FeedController::rerouteUpdate);
+
+    router.patch(FeedRoute.suffix + "/:id").handler(AuthService.getInstance()::hasAuthority);
+    router.patch(FeedRoute.suffix + "/:id").handler(FeedController::isAdmin);
+    router.patch(FeedRoute.suffix + "/:id").handler(FeedController::update);
 
     router.delete(FeedRoute.suffix + "/:id").handler(AuthService.getInstance()::hasAuthority);
     router.delete(FeedRoute.suffix + "/:id").handler(FeedController::isAdmin);
