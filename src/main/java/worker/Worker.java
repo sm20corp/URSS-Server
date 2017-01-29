@@ -64,7 +64,17 @@ public class Worker {
         response.handler(body -> {
           List<JsonObject> feeds = body.toJsonArray().getList();
           for (JsonObject feed : feeds) {
-            System.out.println("feed: " + feed);
+            System.out.println("feed url: " + feed.getString("link"));
+            this.httpClient.put(4242, "localhost", "/api/feeds/fromURL",
+              response -> {
+                response.handler(body -> {
+                  System.out.println("response body: " + body);
+                });
+              })
+            .end(Buffer.buffer(
+              "{" +
+              "\"url\":\"" + feed.getString("link") + "\"" +
+              "}"));
           }
         });
       })
