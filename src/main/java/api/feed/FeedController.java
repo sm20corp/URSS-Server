@@ -218,21 +218,46 @@ public class FeedController {
 
     System.out.println("model: " + model);
 
-    MongoDB.getInstance().getClient().insert("feeds", model.toJSON(), res -> {
-      if (res.succeeded()) {
-        System.out.println("res: " + res.result());
-        ctx.response()
-        .setStatusCode(HttpURLConnection.HTTP_OK)
-        .putHeader("content-type", "application/json; charset=utf-8")
-        .end(new JsonObject().put("id", res.result()).encodePrettily());
-        return ;
+    MongoDB.getInstance().getClient().findOne(
+      "feeds",
+      model.toJSON(),
+      new JsonObject(),
+      findResult -> {
+        if (findResult.succeeded()) {
+          JsonObject feed = findResult.result();
+
+          if (feed == null) {
+            MongoDB.getInstance().getClient().insert("feeds", model.toJSON(), insertResult -> {
+              if (insertResult.succeeded()) {
+                System.out.println("res: " + insertResult.result());
+                ctx.response()
+                .setStatusCode(HttpURLConnection.HTTP_OK)
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(new JsonObject().put("id", insertResult.result()).encodePrettily());
+                return ;
+              }
+              else {
+                System.out.println("FAIL: " + insertResult.cause().getMessage());
+                ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                return ;
+              }
+            });
+          }
+          else {
+            ctx.response()
+            .setStatusCode(HttpURLConnection.HTTP_OK)
+            .putHeader("content-type", "application/json; charset=utf-8")
+            .end(feed.encodePrettily());
+            return ;
+          }
+        }
+        else {
+          System.out.println("FAIL: " + findResult.cause().getMessage());
+          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+          return ;
+        }
       }
-      else {
-        System.out.println("FAIL: " + res.cause().getMessage());
-        ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
-        return ;
-      }
-    });
+    );
   }
 
   public static void show(RoutingContext ctx) {
