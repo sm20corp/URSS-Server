@@ -47,5 +47,6 @@ public class UserRoute {
 
     router.put(UserRoute.suffix + "/viewArticle/:id").handler(UserController::viewArticle);
     router.put(UserRoute.suffix + "/bookmarkFeed/:id").handler(UserController::bookmarkFeed);
+    router.put(UserRoute.suffix + "/starArticle/:id").handler(UserController::starArticle);
   }
 }

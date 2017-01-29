@@ -448,4 +448,88 @@ public class UserController {
       }
     );
   }
+
+  public static void starArticle(RoutingContext ctx) {
+    System.out.println("params: " + ctx.request().params());
+    String id = ctx.request().getParam("id");
+
+    // check if id exists in articles
+    MongoDB.getInstance().getClient().findOne(
+      "articles",
+      new JsonObject().put("_id", id),
+      new JsonObject(),
+      articleResult -> {
+        if (articleResult.succeeded()) {
+          JsonObject article = articleResult.result();
+
+          System.out.println("article found: " + article);
+
+          if (article == null) {
+            ctx.response()
+            .setStatusCode(HttpURLConnection.HTTP_NOT_FOUND)
+            .putHeader("content-type", "application/json; charset=utf-8")
+            .end(new JsonObject().put("message", "article id doesn't exists").encodePrettily());
+            return ;
+          }
+
+          // get current user
+          MongoDB.getInstance().getClient().findOne(
+            "users",
+            new JsonObject().put("_id", ctx.user().principal().getString("userId")),
+            new JsonObject(),
+            userResult -> {
+              if (userResult.succeeded()) {
+                JsonObject user = userResult.result();
+
+                System.out.println("user found: " + user);
+
+                if (user == null) {
+                  ctx.response()
+                  .setStatusCode(HttpURLConnection.HTTP_NOT_FOUND)
+                  .putHeader("content-type", "application/json; charset=utf-8")
+                  .end(new JsonObject().put("message", "your user id doesn't exist").encodePrettily());
+                  return ;
+                }
+
+                // set article as read in history
+                MongoDB.getInstance().getClient().updateCollection(
+                  "histories",
+                  new JsonObject().put("_id", user.getString("history")),
+                  new JsonObject().put("$push", new JsonObject().put("starredArticles", id)),
+                  historyResult -> {
+                    if (historyResult.succeeded()) {
+                      JsonObject result = historyResult.result().toJson();
+
+                      System.out.println("result: " + result);
+
+                      ctx.response()
+                      .setStatusCode(HttpURLConnection.HTTP_NO_CONTENT)
+                      .putHeader("content-type", "application/json; charset=utf-8")
+                      .end();
+                      return ;
+                    }
+                    else {
+                      System.out.println("FAIL: " + historyResult.cause().getMessage());
+                      ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                      return ;
+                    }
+                  }
+                );
+              }
+              else {
+                System.out.println("FAIL: " + userResult.cause().getMessage());
+                ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                return ;
+              }
+            }
+          );
+        }
+        else {
+          System.out.println("FAIL: " + articleResult.cause().getMessage());
+          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+          return ;
+        }
+      }
+    );
+  }
 }
