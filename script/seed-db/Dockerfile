@@ -29,7 +29,7 @@ COPY $URLS $DATA_HOME/$URLS
 
 # Mount data into database
 ENTRYPOINT ["sh", "-c"]
-CMD ["mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection credentials --type json --file $DATA_HOME/$CREDENTIALS --jsonArray && \
-      mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection histories --type json --file $DATA_HOME/$HISTORIES --jsonArray && \
-      mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection users --type json --file $DATA_HOME/$USERS --jsonArray && \
-      mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection urls --type json --file $DATA_HOME/$URLS --jsonArray"]
+CMD ["mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection credentials --type json --file $DATA_HOME/$CREDENTIALS --jsonArray --upsert && \
+      mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection histories --type json --file $DATA_HOME/$HISTORIES --jsonArray --upsert && \
+      mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection users --type json --file $DATA_HOME/$USERS --jsonArray --upsert && \
+      mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection urls --type json --file $DATA_HOME/$URLS --jsonArray --upsert"]
