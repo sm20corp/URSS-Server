@@ -1,11 +1,11 @@
-package urss.server.worker.worker;
+package urss.server.worker;
 
 public class Worker {
   private static final long defaultDelay = 10000;//10 seconds
   private long delay;
 
   public Worker() {
-    this(this.defaultDelay);
+    this(Worker.defaultDelay);
   }
 
   public Worker(long delay) {
@@ -16,12 +16,12 @@ public class Worker {
     System.out.println("worker fired ! id: " + id);
   }
 
-  public setDelay(long delay) {
+  public void setDelay(long delay) {
     this.delay = delay;
   }
 
-  public getDelay() {
-    this.delay;
+  public long getDelay() {
+    return this.delay;
   }
 
   public String toString() {
