@@ -4,40 +4,51 @@ import urss.server.components.IModel;
 import urss.server.components.AModel;
 
 public class UserModel extends AModel<UserModel> implements IModel<UserModel> {
-  private static final String defaultEmail = "";
-  private static final String defaultPassword = "";
-  private String email;
-  private String password;
+  private static final String defaultCredential = "";
+  private static final String defaultHistory = "";
+//  private static final String defaultLastConnected = "";
+  public static final String[] requiredFields = { "credential", "history"/*, "lastConnected"*/ };
+  public static final String[] optionalFields = {  };
+  private String credential;
+  private String history;
+//  private String lastConnected;
 
-  public UserModel() {
-    setEmail(UserModel.defaultEmail);
-    setPassword(UserModel.defaultPassword);
+  public UserModel(String credential, String history) {
+    setCredential(credential);
+    setHistory(history);
   }
 
-  public UserModel(String email, String password) {
-    setEmail(email);
-    setPassword(password);
+  public void setCredential(String credential) {
+    this.credential = credential;
   }
 
-  public void setEmail(String email) {
-    this.email = email;
+  public String getCredential() {
+    return this.credential;
   }
 
-  public String getEmail() {
-    return this.email;
+  public void setHistory(String history) {
+    this.history = history;
   }
 
-  public void setPassword(String password) {
-    this.password = password;
+  public String getHistory() {
+    return this.history;
   }
 
-  public String getPassword() {
-    return this.password;
+  /*
+  public void setLastConnected(String lastConnected) {
+    this.lastConnected = lastConnected;
   }
+
+  public String getLastConnected() {
+    return this.lastConnected;
+  }
+  */
 
   @Override
   public String toString() {
-    return "email: " + getEmail() + " -  password: " + getPassword();
+    return ("credential: " + getCredential() +
+            " - history: " + getHistory()/* +
+            " - lastConnected: " + getLastConnected()*/);
   }
 
   @Override

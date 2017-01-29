@@ -64,13 +64,22 @@ public class Server extends AbstractVerticle {
   private void setupAuthentication() {
     JWTAuthHandler authRedirect = AuthService.getInstance().generateHandler("/auth/local");
 
-    this.router.route("/api/users/*").handler(authRedirect);
-    this.router.route("/api/histories/*").handler(authRedirect);
+    this.router.route("/api/users/:id").handler(authRedirect);
+    this.router.route(HttpMethod.GET, "/api/users/").handler(authRedirect);
+
+    this.router.route("/api/histories/:id").handler(authRedirect);
+    this.router.route(HttpMethod.GET, "/api/histories/").handler(authRedirect);
+
     this.router.route("/api/credentials/:id").handler(authRedirect);
     this.router.route(HttpMethod.GET, "/api/credentials/").handler(authRedirect);
+
     this.router.route(HttpMethod.PUT, "/api/articles/:id").handler(authRedirect);
     this.router.route(HttpMethod.PATCH, "/api/articles/:id").handler(authRedirect);
     this.router.route(HttpMethod.DELETE, "/api/articles/:id").handler(authRedirect);
+
+    this.router.route(HttpMethod.PUT, "/api/feeds/:id").handler(authRedirect);
+    this.router.route(HttpMethod.PATCH, "/api/feeds/:id").handler(authRedirect);
+    this.router.route(HttpMethod.DELETE, "/api/feeds/:id").handler(authRedirect);
   }
 
   private void setupRoutes() {

@@ -9,7 +9,6 @@ public class HistoryRoute {
   private static final String suffix = "/api/histories";
 
   public static void attachRoutes(Router router) {
-    router.post(HistoryRoute.suffix + "/").handler(AuthService.getInstance()::hasAuthority);
     router.post(HistoryRoute.suffix + "/").handler(HistoryController::verifyProperties);
     router.post(HistoryRoute.suffix + "/").handler(HistoryController::create);
 
