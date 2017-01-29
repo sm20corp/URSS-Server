@@ -44,5 +44,8 @@ public class UserRoute {
     router.post(UserRoute.suffix + "/createAccount").handler(UserController::verifyProperties);
     router.post(UserRoute.suffix + "/createAccount").handler(UserController::create);
     router.post(UserRoute.suffix + "/createAccount").handler(UserController::ok);
+
+    router.put(UserRoute.suffix + "/viewArticle/:id").handler(UserController::viewArticle);
+    router.put(UserRoute.suffix + "/bookmarkFeed/:id").handler(UserController::bookmarkFeed);
   }
 }

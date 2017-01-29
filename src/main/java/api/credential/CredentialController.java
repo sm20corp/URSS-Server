@@ -18,7 +18,7 @@ public class CredentialController {
     System.out.println("you want this id: " + id);
     System.out.println("isAdmin: " + ctx.get("isAdmin"));
 
-    if ((boolean) ctx.get("isAdmin") == true || ctx.user().principal().getString("userId").equals(id)) {
+    if ((boolean) ctx.get("isAdmin") == true || ctx.user().principal().getString("credentialId").equals(id)) {
       System.out.println("Access granted");
 
       ctx.next();

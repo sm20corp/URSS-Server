@@ -39,7 +39,7 @@ public class HistoryController {
 
     // TODO
     /** code property verification **/
-    if ((boolean) ctx.get("isAdmin") == true || ctx.user().principal().getString("userId").equals(id)) {
+    if ((boolean) ctx.get("isAdmin") == true || ctx.user().principal().getString("credentialId").equals(id)) {
       System.out.println("Access granted");
 
       ctx.next();
