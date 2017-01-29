@@ -71,22 +71,22 @@ public class ArticleController {
       "articles",
       model.toJSON(),
       new JsonObject(),
-      res -> {
-        if (res.succeeded()) {
-          JsonObject article = res.result();
+      findResult -> {
+        if (findResult.succeeded()) {
+          JsonObject article = findResult.result();
 
           if (article == null) {
-            MongoDB.getInstance().getClient().insert("articles", model.toJSON(), res -> {
-              if (res.succeeded()) {
-                System.out.println("res: " + res.result());
+            MongoDB.getInstance().getClient().insert("articles", model.toJSON(), insertResult -> {
+              if (insertResult.succeeded()) {
+                System.out.println("res: " + insertResult.result());
                 ctx.response()
                 .setStatusCode(HttpURLConnection.HTTP_OK)
                 .putHeader("content-type", "application/json; charset=utf-8")
-                .end(new JsonObject().put("id", res.result()).encodePrettily());
+                .end(new JsonObject().put("id", insertResult.result()).encodePrettily());
                 return ;
               }
               else {
-                System.out.println("FAIL: " + res.cause().getMessage());
+                System.out.println("FAIL: " + insertResult.cause().getMessage());
                 ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
                 return ;
               }
@@ -94,14 +94,14 @@ public class ArticleController {
           }
           else {
             ctx.response()
-            .setStatusCode(HttpURLConnection.HTTP_CONFLICT);
+            .setStatusCode(HttpURLConnection.HTTP_CONFLICT)
             .putHeader("content-type", "application/json; charset=utf-8")
-            .end(new JsonObject().put("message", "article already exists"));
+            .end(new JsonObject().put("message", "article already exists").encodePrettily());
             return ;
           }
         }
         else {
-          System.out.println("FAIL: " + res.cause().getMessage());
+          System.out.println("FAIL: " + findResult.cause().getMessage());
           ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
           return ;
         }
