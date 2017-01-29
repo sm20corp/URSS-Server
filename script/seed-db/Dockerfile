@@ -9,6 +9,7 @@ ENV ARTICLES articles.json
 ENV FEEDS feeds.json
 ENV HISTORIES histories.json
 ENV USERS users.json
+ENV URLS urls.json
 
 # Set database name
 ENV DB_NAME urss
@@ -28,6 +29,7 @@ COPY $ARTICLES $DATA_HOME/$ARTICLES
 COPY $FEEDS $DATA_HOME/$FEEDS
 COPY $HISTORIES $DATA_HOME/$HISTORIES
 COPY $USERS $DATA_HOME/$USERS
+COPY $URLS $DATA_HOME/$URLS
 
 # Mount data into database
 ENTRYPOINT ["sh", "-c"]
@@ -35,4 +37,5 @@ CMD ["mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection cre
       mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection articles --type json --file $DATA_HOME/$ARTICLES --jsonArray && \
       mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection feeds --type json --file $DATA_HOME/$FEEDS --jsonArray && \
       mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection histories --type json --file $DATA_HOME/$HISTORIES --jsonArray && \
-      mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection users --type json --file $DATA_HOME/$USERS --jsonArray"]
+      mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection users --type json --file $DATA_HOME/$USERS --jsonArray && \
+      mongoimport --host $DB_HOST --port $DB_PORT --db $DB_NAME --collection urls --type json --file $DATA_HOME/$URLS --jsonArray"]

@@ -1,0 +1,44 @@
+[
+  {
+    "url": "http://www.lequipe.fr/rss/actu_rss.xml"
+  },
+  {
+    "url": "http://www.lemonde.fr/rss/une.xml"
+  },
+  {
+    "url": "https://www.nasa.gov/rss/dyn/image_of_the_day.rss"
+  },
+  {
+    "url": "http://feeds.feedburner.com/TEDTalks_video"
+  },
+  {
+    "url": "http://googleblog.blogspot.com/atom.xml"
+  },
+  {
+    "url": "http://feeds.feedburner.com/TechCrunch/"
+  },
+  {
+    "url": "http://stackoverflow.com/feeds"
+  },
+  {
+    "url": "http://startup88.com/rss"
+  },
+  {
+    "url": "http://www.ventureblog.com/rss.xml"
+  },
+  {
+    "url": "http://xkcd.com/rss.xml"
+  },
+  {
+    "url": "http://www.jeuxvideo.com/rss/rss-pc.xml"
+  },
+  {
+    "url": "http://news.yahoo.com/rss/"
+  },
+  {
+    "url": "http://feeds.bbci.co.uk/news/world/rss.xml"
+  },
+  {
+    "url": "https://rss.sciencedaily.com/plants_animals/cats.xml"
+  }
+]
