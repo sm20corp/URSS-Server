@@ -29,3 +29,11 @@ services:
       - db
     network_mode: "host"
     restart: "always"
+  urss-web:
+    build: ./script/urss-web
+    ports:
+      - "8000:8000"
+    depends_on:
+      - urss
+    network_mode: "host"
+    restart: "always"
