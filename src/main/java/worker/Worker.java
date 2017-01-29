@@ -36,7 +36,6 @@ public class Worker {
           List<JsonObject> results = res.result();
 
           for (JsonObject feedUrl : results) {
-            System.out.println("meh: " + feedUrl);
             this.httpClient.post(4242, "localhost", "/api/feeds/fromURL",
               response -> {
                 response.handler(body -> {
@@ -58,27 +57,31 @@ public class Worker {
     if (this.httpClient == null) {
       initFeeds();
     }
-
-    this.httpClient.get(4242, "localhost", "/api/feeds",
-      response -> {
-        response.handler(body -> {
-          List<JsonObject> feeds = body.toJsonArray().getList();
-          for (JsonObject feed : feeds) {
-            System.out.println("feed url: " + feed.getString("link"));
-            this.httpClient.put(4242, "localhost", "/api/feeds/fromURL",
-              updateResponse -> {
-                updateResponse.handler(updateBody -> {
-                  System.out.println("updateResponse body: " + updateBody);
-                });
-              })
-            .end(Buffer.buffer(
-              "{" +
-              "\"url\":\"" + feed.getString("link") + "\"" +
-              "}"));
-          }
-        });
-      })
-    .end();
+    else {
+      System.out.println("updating ...");
+      this.httpClient.get(4242, "localhost", "/api/feeds",
+        response -> {
+          System.out.println("a response !");
+          response.handler(body -> {
+            List<JsonObject> feeds = body.toJsonArray().getList();
+            System.out.println("body: " + feeds);
+            for (JsonObject feed : feeds) {
+              System.out.println("feed url: " + feed.getString("link"));
+              this.httpClient.put(4242, "localhost", "/api/feeds/fromURL",
+                updateResponse -> {
+                  updateResponse.handler(updateBody -> {
+                    System.out.println("updateResponse body: " + updateBody);
+                  });
+                })
+              .end(Buffer.buffer(
+                "{" +
+                "\"url\":\"" + feed.getString("link") + "\"" +
+                "}"));
+            }
+          });
+        })
+      .end();
+    }
   }
 
   public void setDelay(long delay) {

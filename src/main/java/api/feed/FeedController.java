@@ -122,8 +122,6 @@ public class FeedController {
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed = input.build(new XmlReader(feedUrl));
 
-        System.out.println(feed);
-
         JsonArray articles = new JsonArray();
         List<SyndEntry> entries = feed.getEntries();
 
