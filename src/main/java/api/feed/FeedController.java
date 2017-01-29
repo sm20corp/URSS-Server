@@ -247,7 +247,7 @@ public class FeedController {
             ctx.response()
             .setStatusCode(HttpURLConnection.HTTP_OK)
             .putHeader("content-type", "application/json; charset=utf-8")
-            .end(feed.encodePrettily());
+            .end(new JsonObject().put("id", feed.getString("_id")).encodePrettily());
             return ;
           }
         }
@@ -287,7 +287,7 @@ public class FeedController {
 
           ctx.response()
           .putHeader("content-type", "application/json; charset=utf-8")
-          .end(new JsonObject().put("id", feed.getString("_id")).encodePrettily());
+          .end(feed.encodePrettily());
           return ;
         }
         else {
