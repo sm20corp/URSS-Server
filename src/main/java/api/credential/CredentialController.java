@@ -78,19 +78,46 @@ public class CredentialController {
 
     System.out.println("model toString: " + model);
 
-    MongoDB.getInstance().getClient().insert("credentials", model.toJSON(), res -> {
-      if (res.succeeded()) {
-        System.out.println("res: " + res.result());
+    MongoDB.getInstance().getClient().findOne(
+      "credentials",
+      model.toJSON(),
+      new JsonObject()
+      .put("password", false)
+      .put("role", false),
+      findResult -> {
+        if (findResult.succeeded()) {
+          JsonObject credential = findResult.result();
 
-        ctx.setBody(Buffer.buffer(new JsonObject().put("id", res.result()).toString()));
-        ctx.next();
+          if (credential == null) {
+            MongoDB.getInstance().getClient().insert("credentials", model.toJSON(), insertResult -> {
+              if (insertResult.succeeded()) {
+                System.out.println("res: " + insertResult.result());
+
+                ctx.setBody(Buffer.buffer(new JsonObject().put("id", insertResult.result()).toString()));
+                ctx.next();
+              }
+              else {
+                System.out.println("FAIL: " + insertResult.cause().getMessage());
+                ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                return ;
+              }
+            });
+          }
+          else {
+            ctx.response()
+            .setStatusCode(HttpURLConnection.HTTP_OK)
+            .putHeader("content-type", "application/json; charset=utf-8")
+            .end(credential.encodePrettily());
+            return ;
+          }
+        }
+        else {
+          System.out.println("FAIL: " + findResult.cause().getMessage());
+          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+          return ;
+        }
       }
-      else {
-        System.out.println("FAIL: " + res.cause().getMessage());
-        ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
-        return ;
-      }
-    });
+    );
   }
 
   public static void show(RoutingContext ctx) {
