@@ -66,9 +66,9 @@ public class Worker {
           for (JsonObject feed : feeds) {
             System.out.println("feed url: " + feed.getString("link"));
             this.httpClient.put(4242, "localhost", "/api/feeds/fromURL",
-              response -> {
-                response.handler(body -> {
-                  System.out.println("response body: " + body);
+              updateResponse -> {
+                updateResponse.handler(updateBody -> {
+                  System.out.println("updateResponse body: " + updateBody);
                 });
               })
             .end(Buffer.buffer(
