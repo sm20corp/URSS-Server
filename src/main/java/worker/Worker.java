@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.buffer.Buffer;
 
 import urss.server.Server;
@@ -23,7 +24,7 @@ public class Worker {
   }
 
   public void initFeeds() {
-    if (httpClient == null) {
+    if (this.httpClient == null) {
       this.httpClient = Server.getInstance().getVertx().createHttpClient();
     }
 
@@ -61,7 +62,10 @@ public class Worker {
     this.httpClient.get(4242, "localhost", "/api/feeds",
       response -> {
         response.handler(body -> {
-          System.out.println("response body: " + body);
+          List<JsonObject> feeds = body.toJsonArray().getList();
+          for (JsonObject feed : feeds) {
+            System.out.println("feed: " + feed);
+          }
         });
       })
     .end();

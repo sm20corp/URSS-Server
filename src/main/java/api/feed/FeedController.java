@@ -256,6 +256,76 @@ public class FeedController {
     );
   }
 
+  public static void updateArticles(RoutingContext ctx) {
+    JsonArray articles = ctx.get("articles");
+
+    if (articles.size() <= 0) {
+      ctx.next();
+    }
+    else {
+      JsonObject article = (JsonObject) articles.remove(0);
+      ArticleModel model = JsonHandler.getInstance().fromJson(article.toString(), ArticleModel.class);
+
+      if (!model.validate()) {
+        System.out.println("articleModel validation failed");
+
+        ctx.response()
+        .setStatusCode(HttpURLConnection.HTTP_BAD_REQUEST)
+        .putHeader("content-type", "application/json; charset=utf-8")
+        .end(new JsonObject().put("message", "model validation failed").encodePrettily());
+        return ;
+      }
+
+      MongoDB.getInstance().getClient().find(
+        "articles",
+        new JsonObject()
+        .put("link", article.getString("link")),
+        res -> {
+          if (res.succeeded()) {
+            List<JsonObject> results = res.result();
+            JsonArray feeds = new JsonArray(results);
+
+            if (feeds == null || feeds.size() <= 0) {
+              // add article and add article to feed list
+              System.out.println("=== UPDATE SPOTTED ===");
+              System.out.println("link: " + article.getString("link"));
+              MongoDB.getInstance().getClient().insert("articles", model.toJSON(), insertResult -> {
+                if (insertResult.succeeded()) {
+                  String id = insertResult.result();
+
+                  ((JsonObject) ctx.get("jsonFeed")).getJsonArray("articles").add(id);
+                  updateArticles(ctx);
+                }
+                else {
+                  System.out.println("FAIL: " + insertResult.cause().getMessage());
+                  ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                  return ;
+                }
+              });
+            }
+          }
+          else {
+            System.out.println("FAIL: " + res.cause().getMessage());
+            ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            return ;
+          }
+        }
+      );
+    }
+  }
+
+  public static void rerouteUpdate(RoutingContext ctx) {
+    JsonObject jsonFeed = ctx.get("jsonFeed");
+
+    System.out.println("rerouteUpdate jsonFeed: " + jsonFeed);
+
+    /*
+
+    ctx.setBody(Buffer.buffer(jsonFeed.toString()));
+    ctx.reroute(HttpMethod.POST, "/api/feeds/");
+    */
+  }
+
   public static void update(RoutingContext ctx) {
     JsonObject body = ctx.getBodyAsJson();
     System.out.println("params: " + ctx.request().params());
