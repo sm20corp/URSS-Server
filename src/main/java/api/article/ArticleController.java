@@ -67,21 +67,46 @@ public class ArticleController {
 
     System.out.println("model toString: " + model);
 
-    MongoDB.getInstance().getClient().insert("articles", model.toJSON(), res -> {
-      if (res.succeeded()) {
-        System.out.println("res: " + res.result());
-        ctx.response()
-        .setStatusCode(HttpURLConnection.HTTP_OK)
-        .putHeader("content-type", "application/json; charset=utf-8")
-        .end(new JsonObject().put("id", res.result()).encodePrettily());
-        return ;
+    MongoDB.getInstance().getClient().findOne(
+      "articles",
+      model.toJSON(),
+      new JsonObject(),
+      findResult -> {
+        if (findResult.succeeded()) {
+          JsonObject article = findResult.result();
+
+          if (article == null) {
+            MongoDB.getInstance().getClient().insert("articles", model.toJSON(), insertResult -> {
+              if (insertResult.succeeded()) {
+                System.out.println("res: " + insertResult.result());
+                ctx.response()
+                .setStatusCode(HttpURLConnection.HTTP_OK)
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(new JsonObject().put("id", insertResult.result()).encodePrettily());
+                return ;
+              }
+              else {
+                System.out.println("FAIL: " + insertResult.cause().getMessage());
+                ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                return ;
+              }
+            });
+          }
+          else {
+            ctx.response()
+            .setStatusCode(HttpURLConnection.HTTP_OK)
+            .putHeader("content-type", "application/json; charset=utf-8")
+            .end(article.encodePrettily());
+            return ;
+          }
+        }
+        else {
+          System.out.println("FAIL: " + findResult.cause().getMessage());
+          ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
+          return ;
+        }
       }
-      else {
-        System.out.println("FAIL: " + res.cause().getMessage());
-        ctx.fail(HttpURLConnection.HTTP_INTERNAL_ERROR);
-        return ;
-      }
-    });
+    );
   }
 
   public static void show(RoutingContext ctx) {
@@ -94,8 +119,6 @@ public class ArticleController {
       res -> {
         if (res.succeeded()) {
           JsonObject article = res.result();
-
-          System.out.println("article found: " + article);
 
           if (article == null) {
             article = new JsonObject().put("message", "id not found in db");

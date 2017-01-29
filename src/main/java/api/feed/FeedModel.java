@@ -11,7 +11,7 @@ import urss.server.api.feed.Image;
 import urss.server.api.feed.TextInput;
 
 public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
-  public static final String[] requiredFields = { "title", "link", "description" };
+  public static final String[] requiredFields = { "url", "title", "link", "description" };
   public static final String[] optionalFields = { "language", "copyright",
                                                   "managingEditor", "webMaster",
                                                   "pubDate", "lastBuildDate",
@@ -19,6 +19,7 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
                                                   "docs", "cloud", "ttl", "image",
                                                   "textInput", "skipHours",
                                                   "skipDays" };
+  private String url;
   private String title;
   private String link;
   private String description;
@@ -39,7 +40,8 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
   private String[] skipDays;
   private List<String> articles = new ArrayList<String>();
 
-  public FeedModel(String title, String link, String description) {
+  public FeedModel(String url, String title, String link, String description) {
+    this.url = url;
     this.title = title;
     this.link = link;
     this.description = description;
@@ -60,6 +62,9 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
     this.skipDays = null;
   }
 
+  public String getUrl() {
+    return this.url;
+  }
   public String getTitle() {
     return (this.title);
   }
@@ -118,7 +123,8 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
 
   @Override
   public String toString() {
-    return ("title: " + getTitle() +
+    return ("url: " + getUrl() +
+            " - title: " + getTitle() +
             " - link: " + getLink() +
             " - description: " + getDescription() +
             " - pubDate: " + getPubDate() +
@@ -127,7 +133,7 @@ public class FeedModel extends AModel<FeedModel> implements IModel<FeedModel> {
 
   @Override
   public Boolean validate() {
-    if (this.getTitle().isEmpty() || this.getDescription().isEmpty() || this.getLink().isEmpty())
+    if (this.getUrl().isEmpty() || this.getTitle().isEmpty() || this.getDescription().isEmpty() || this.getLink().isEmpty())
       return false;
     return true;
   }

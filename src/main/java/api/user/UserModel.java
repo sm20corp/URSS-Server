@@ -6,16 +6,17 @@ import urss.server.components.AModel;
 public class UserModel extends AModel<UserModel> implements IModel<UserModel> {
   private static final String defaultCredential = "";
   private static final String defaultHistory = "";
-//  private static final String defaultLastConnected = "";
+  private static final String defaultLastConnected = "";
   public static final String[] requiredFields = { "credential", "history"/*, "lastConnected"*/ };
   public static final String[] optionalFields = {  };
   private String credential;
   private String history;
-//  private String lastConnected;
+  private String lastConnected;
 
   public UserModel(String credential, String history) {
     setCredential(credential);
     setHistory(history);
+    setLastConnected(UserModel.defaultLastConnected);
   }
 
   public void setCredential(String credential) {
@@ -34,7 +35,6 @@ public class UserModel extends AModel<UserModel> implements IModel<UserModel> {
     return this.history;
   }
 
-  /*
   public void setLastConnected(String lastConnected) {
     this.lastConnected = lastConnected;
   }
@@ -42,13 +42,12 @@ public class UserModel extends AModel<UserModel> implements IModel<UserModel> {
   public String getLastConnected() {
     return this.lastConnected;
   }
-  */
 
   @Override
   public String toString() {
     return ("credential: " + getCredential() +
-            " - history: " + getHistory()/* +
-            " - lastConnected: " + getLastConnected()*/);
+            " - history: " + getHistory() +
+            " - lastConnected: " + getLastConnected());
   }
 
   @Override

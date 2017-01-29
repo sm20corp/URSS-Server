@@ -18,11 +18,14 @@ import urss.server.api.credential.CredentialRoute;
 import urss.server.api.article.ArticleRoute;
 import urss.server.api.feed.FeedRoute;
 import urss.server.api.history.HistoryRoute;
+import urss.server.api.user.UserRoute;
+import urss.server.worker.Worker;
 
 public class Server extends AbstractVerticle {
   private static Server instance = null;
   private Router router;
   private MongoDB db;
+  private Worker worker;
 
   @Override
   public void start(Future<Void> fut) {
@@ -30,10 +33,13 @@ public class Server extends AbstractVerticle {
 
     this.db = MongoDB.getInstance();// default instance points to localhost:27017 to "urss" db
     this.router = Router.router(vertx);
+    this.worker = new Worker(60000);// 1 minute delay, default delay is 10 seconds
 
     configure();
     setupAuthentication();
     setupRoutes();
+
+    vertx.setPeriodic(this.worker.getDelay(), this.worker::refreshFeeds);
 
     vertx.createHttpServer().requestHandler(router::accept).listen(4242, result -> {
       if (result.succeeded()) {
@@ -57,15 +63,22 @@ public class Server extends AbstractVerticle {
     .allowedHeader("Access-Control-Allow-Credentials")
     .allowedHeader("Access-Control-Allow-Origin")
     .allowedHeader("Access-Control-Allow-Headers")
-    .allowedHeader("Content-Type"));
+    .allowedHeader("Content-Type")
+    .allowedHeader("Authorization"));
     this.router.route().handler(BodyHandler.create());
   }
 
   private void setupAuthentication() {
     JWTAuthHandler authRedirect = AuthService.getInstance().generateHandler("/auth/local");
 
-    this.router.route("/api/users/:id").handler(authRedirect);
+    this.router.route(HttpMethod.GET, "/api/users/:id").handler(authRedirect);
+    this.router.route(HttpMethod.PUT, "/api/users/:id").handler(authRedirect);
+    this.router.route(HttpMethod.PATCH, "/api/users/:id").handler(authRedirect);
+    this.router.route(HttpMethod.DELETE, "/api/users/:id").handler(authRedirect);
     this.router.route(HttpMethod.GET, "/api/users/").handler(authRedirect);
+    this.router.route(HttpMethod.PUT, "/api/users/viewArticle/:id").handler(authRedirect);
+    this.router.route(HttpMethod.PUT, "/api/users/bookmarkFeed/:id").handler(authRedirect);
+    this.router.route(HttpMethod.PUT, "/api/users/starArticle/:id").handler(authRedirect);
 
     this.router.route("/api/histories/:id").handler(authRedirect);
     this.router.route(HttpMethod.GET, "/api/histories/").handler(authRedirect);
@@ -77,8 +90,6 @@ public class Server extends AbstractVerticle {
     this.router.route(HttpMethod.PATCH, "/api/articles/:id").handler(authRedirect);
     this.router.route(HttpMethod.DELETE, "/api/articles/:id").handler(authRedirect);
 
-    this.router.route(HttpMethod.PUT, "/api/feeds/:id").handler(authRedirect);
-    this.router.route(HttpMethod.PATCH, "/api/feeds/:id").handler(authRedirect);
     this.router.route(HttpMethod.DELETE, "/api/feeds/:id").handler(authRedirect);
   }
 
@@ -89,7 +100,7 @@ public class Server extends AbstractVerticle {
     ArticleRoute.attachRoutes(this.router);
     FeedRoute.attachRoutes(this.router);
     HistoryRoute.attachRoutes(this.router);
-    //UserRoute.attachRoutes(this.router);
+    UserRoute.attachRoutes(this.router);
   }
 
   public static Server getInstance() {

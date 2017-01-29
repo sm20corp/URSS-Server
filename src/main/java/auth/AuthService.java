@@ -93,7 +93,6 @@ public class AuthService {
           }
 
           // check if the credential is linked to a user
-          /*
           MongoDB.getInstance().getClient()
           .findOne(
             "users",
@@ -115,7 +114,6 @@ public class AuthService {
                   return ;
                 }
                 getLogger().info("user: " + user);
-                */
                 // check if the password is fine
                 CredentialModel credentialModel = JsonHandler.getInstance().fromJson(credential.toString(), CredentialModel.class);
                 if (!credentialModel.authenticate(body.getString("password"))) {
@@ -125,7 +123,6 @@ public class AuthService {
                 }
 
                 // update last connected field
-                /*
                 MongoDB.getInstance().getClient()
                 .update(
                   "users",
@@ -140,19 +137,18 @@ public class AuthService {
                     }
                   }
                 );
-                */
 
                 // generate token with user's id and role
                 ctx.response()
                 .setStatusCode(HttpURLConnection.HTTP_OK)
                 .putHeader("content-type", "application/json; charset=utf-8")
                 .end(new JsonObject()
-                  .put("token", generateToken(/*user*/credential.getString("_id"), credential.getString("role")))
-                  .put("userId", /*user*/credential.getString("_id"))
+                  .put("token", generateToken(user.getString("_id"), credential.getString("role")))
+                  .put("userId", user.getString("_id"))
+                  .put("credentialId", credential.getString("_id"))
                   .encodePrettily()
                 );
                 return ;
-                /*
               }
               else {
                 getLogger().info("FAIL: " + userRes.cause().getMessage());
@@ -161,7 +157,6 @@ public class AuthService {
               }
             }
           );
-          */
         }
         else {
           getLogger().info("FAIL: " + credentialRes.cause().getMessage());

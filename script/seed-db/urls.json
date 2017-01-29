@@ -1,0 +1,58 @@
+[
+  {
+    "_id": "588e2f85d22a04b914a445cf",
+    "url": "http://www.lequipe.fr/rss/actu_rss.xml"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445d0",
+    "url": "http://www.lemonde.fr/rss/une.xml"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445d1",
+    "url": "https://www.nasa.gov/rss/dyn/image_of_the_day.rss"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445d2",
+    "url": "http://feeds.feedburner.com/TEDTalks_video"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445d3",
+    "url": "http://googleblog.blogspot.com/atom.xml"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445d4",
+    "url": "http://feeds.feedburner.com/TechCrunch/"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445d5",
+    "url": "http://stackoverflow.com/feeds"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445d6",
+    "url": "http://startup88.com/rss"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445d7",
+    "url": "http://www.ventureblog.com/rss.xml"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445d8",
+    "url": "http://xkcd.com/rss.xml"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445d9",
+    "url": "http://www.jeuxvideo.com/rss/rss-pc.xml"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445da",
+    "url": "http://news.yahoo.com/rss/"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445db",
+    "url": "http://feeds.bbci.co.uk/news/world/rss.xml"
+  },
+  {
+    "_id": "588e2f85d22a04b914a445dc",
+    "url": "https://rss.sciencedaily.com/plants_animals/cats.xml"
+  }
+]
