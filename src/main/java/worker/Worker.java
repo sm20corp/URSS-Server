@@ -11,7 +11,7 @@ import urss.server.Server;
 import urss.server.components.MongoDB;
 
 public class Worker {
-  private static final long defaultDelay = 10000;//10 seconds
+  private static final long defaultDelay = 60000;//1 minute
   private long delay;
   private HttpClient httpClient = null;
 

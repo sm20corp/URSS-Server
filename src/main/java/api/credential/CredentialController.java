@@ -1,9 +1,10 @@
 package urss.server.api.credential;
 
+import java.net.HttpURLConnection;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.web.RoutingContext;
-import java.net.HttpURLConnection;
 
 import urss.server.components.MongoDB;
 import urss.server.components.JsonHandler;
@@ -51,6 +52,13 @@ public class CredentialController {
     }
   }
 
+  public static void ok(RoutingContext ctx) {
+    ctx.response()
+    .setStatusCode(HttpURLConnection.HTTP_OK)
+    .putHeader("content-type", "application/json; charset=utf-8")
+    .end(ctx.getBodyAsJson().encodePrettily());
+  }
+
   public static void create(RoutingContext ctx) {
     JsonObject body = ctx.getBodyAsJson();
     System.out.println("params: " + ctx.request().params());
@@ -73,11 +81,9 @@ public class CredentialController {
     MongoDB.getInstance().getClient().insert("credentials", model.toJSON(), res -> {
       if (res.succeeded()) {
         System.out.println("res: " + res.result());
-        ctx.response()
-        .setStatusCode(HttpURLConnection.HTTP_OK)
-        .putHeader("content-type", "application/json; charset=utf-8")
-        .end(new JsonObject().put("id", res.result()).encodePrettily());
-        return ;
+
+        ctx.setBody(Buffer.buffer(new JsonObject().put("id", res.result()).toString()));
+        ctx.next();
       }
       else {
         System.out.println("FAIL: " + res.cause().getMessage());

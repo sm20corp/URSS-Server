@@ -11,6 +11,7 @@ public class HistoryRoute {
   public static void attachRoutes(Router router) {
     router.post(HistoryRoute.suffix + "/").handler(HistoryController::verifyProperties);
     router.post(HistoryRoute.suffix + "/").handler(HistoryController::create);
+    router.post(HistoryRoute.suffix + "/").handler(HistoryController::ok);
 
     router.get(HistoryRoute.suffix + "/:id").handler(AuthService.getInstance()::hasAuthority);
 //    router.get(HistoryRoute.suffix + "/:id").handler(HistoryController::isMine);

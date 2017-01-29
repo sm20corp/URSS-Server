@@ -33,7 +33,7 @@ public class Server extends AbstractVerticle {
 
     this.db = MongoDB.getInstance();// default instance points to localhost:27017 to "urss" db
     this.router = Router.router(vertx);
-    this.worker = new Worker(30000);// 30 seconds delay, default delay is 10 seconds
+    this.worker = new Worker(60000);// 1 minute delay, default delay is 10 seconds
 
     configure();
     setupAuthentication();

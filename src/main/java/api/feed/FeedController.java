@@ -114,7 +114,7 @@ public class FeedController {
     DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     JsonObject body = ctx.getBodyAsJson();
     String url = body.getString("url");
-    
+
     if (url != null && !url.isEmpty()) {
       try {
         URL feedUrl = new URL(url);
@@ -304,13 +304,6 @@ public class FeedController {
                 }
               });
             }
-            else {
-              ctx.response()
-              .setStatusCode(HttpURLConnection.HTTP_NOT_MODIFIED)
-              .putHeader("content-type", "application/json; charset=utf-8")
-              .end(new JsonObject().put("message", "nothing to update sry :()").encodePrettily());
-              return ;
-            }
           }
           else {
             System.out.println("FAIL: " + res.cause().getMessage());
@@ -327,6 +320,11 @@ public class FeedController {
 
     System.out.println("rerouteUpdate jsonFeed: " + jsonFeed);
 
+    ctx.response()
+    .setStatusCode(HttpURLConnection.HTTP_NOT_MODIFIED)
+    .putHeader("content-type", "application/json; charset=utf-8")
+    .end(new JsonObject().put("message", "nothing to update sry :(").encodePrettily());
+    return ;
     /*
 
     ctx.setBody(Buffer.buffer(jsonFeed.toString()));

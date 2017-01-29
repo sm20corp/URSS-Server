@@ -11,6 +11,7 @@ public class CredentialRoute {
   public static void attachRoutes(Router router) {
     router.post(CredentialRoute.suffix + "/").handler(CredentialController::verifyProperties);
     router.post(CredentialRoute.suffix + "/").handler(CredentialController::create);
+    router.post(CredentialRoute.suffix + "/").handler(CredentialController::ok);
 
     router.get(CredentialRoute.suffix + "/:id").handler(AuthService.getInstance()::hasAuthority);
     router.get(CredentialRoute.suffix + "/:id").handler(CredentialController::isMine);

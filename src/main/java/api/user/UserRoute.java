@@ -3,6 +3,8 @@ package urss.server.api.user;
 import io.vertx.ext.web.Router;
 
 import urss.server.auth.AuthService;
+import urss.server.api.credential.CredentialController;
+import urss.server.api.history.HistoryController;
 import urss.server.api.user.UserController;
 
 public class UserRoute {
@@ -11,6 +13,7 @@ public class UserRoute {
   public static void attachRoutes(Router router) {
     router.post(UserRoute.suffix + "/").handler(UserController::verifyProperties);
     router.post(UserRoute.suffix + "/").handler(UserController::create);
+    router.post(UserRoute.suffix + "/").handler(UserController::ok);
 
     router.get(UserRoute.suffix + "/:id").handler(AuthService.getInstance()::hasAuthority);
 //    router.get(UserRoute.suffix + "/:id").handler(UserController::isMine);
@@ -31,5 +34,12 @@ public class UserRoute {
     router.get(UserRoute.suffix + "/").handler(AuthService.getInstance()::hasAuthority);
     router.get(UserRoute.suffix + "/").handler(UserController::isAdmin);
     router.get(UserRoute.suffix + "/").handler(UserController::list);
+
+    router.post(UserRoute.suffix + "/createAccount").handler(CredentialController::create);
+    router.post(UserRoute.suffix + "/createAccount").handler(UserController::credentialToHistory);
+    router.post(UserRoute.suffix + "/createAccount").handler(HistoryController::create);
+    router.post(UserRoute.suffix + "/createAccount").handler(UserController::historyToUser);
+    router.post(UserRoute.suffix + "/createAccount").handler(UserController::create);
+    router.post(UserRoute.suffix + "/createAccount").handler(UserController::ok);
   }
 }
