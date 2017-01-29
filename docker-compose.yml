@@ -33,7 +33,7 @@ services:
     build: ./script/urss-web
     ports:
       - "8000:8000"
-    depends_on:
-      - urss
+    # depends_on:
+    #   - urss
     network_mode: "host"
     restart: "always"
