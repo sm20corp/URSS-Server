@@ -62,7 +62,8 @@ public class Worker {
       this.httpClient.get(4242, "localhost", "/api/feeds",
         response -> {
           System.out.println("a response !");
-          response.handler(body -> {
+          response.bodyHandler(body -> {
+            System.out.println("handler fired");
             List<JsonObject> feeds = body.toJsonArray().getList();
             System.out.println("body: " + feeds);
             for (JsonObject feed : feeds) {
