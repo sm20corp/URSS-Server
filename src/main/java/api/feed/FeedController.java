@@ -411,8 +411,6 @@ public class FeedController {
           List<JsonObject> results = res.result();
           JsonArray feeds = new JsonArray(results);
 
-          System.out.println("all feeds: " + feeds);
-
           if (feeds == null || feeds.size() <= 0) {
             ctx.response()
             .setStatusCode(HttpURLConnection.HTTP_NOT_FOUND)
