@@ -1,8 +1,7 @@
 package urss.server.api.feed;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.sql.Timestamp;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.HttpURLConnection;
@@ -93,9 +92,9 @@ public class FeedController {
         new JsonObject(),
         findResult -> {
           if (findResult.succeeded()) {
-            JsonObject article = findResult.result();
+            JsonObject articleRes = findResult.result();
 
-            if (article == null) {
+            if (articleRes == null) {
               MongoDB.getInstance().getClient().insert("articles", model.toJSON(), insertResult -> {
                 if (insertResult.succeeded()) {
                   String id = insertResult.result();
@@ -136,7 +135,6 @@ public class FeedController {
   }
 
   public static void create(RoutingContext ctx) {
-    DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     JsonObject body = ctx.getBodyAsJson();
     String url = body.getString("url");
 
@@ -160,7 +158,7 @@ public class FeedController {
           if (entry.getDescription() != null)
             article.put("description", entry.getDescription().getValue());
           if (entry.getPublishedDate() != null)
-            article.put("pubDate", dateFormat.format(entry.getPublishedDate()));
+            article.put("pubDate", new Timestamp(entry.getPublishedDate().getTime()));
           if (entry.getAuthor() != null)
             article.put("author", entry.getAuthor());
           if (entry.getEnclosures() != null && entry.getEnclosures().size() > 0) {
@@ -446,7 +444,7 @@ public class FeedController {
             ctx.response()
             .setStatusCode(HttpURLConnection.HTTP_NOT_FOUND)
             .putHeader("content-type", "application/json; charset=utf-8")
-            .end(new JsonObject().put("message", "no article found").encodePrettily());
+            .end(new JsonObject().put("message", "no feed found").encodePrettily());
             return ;
           }
           else {

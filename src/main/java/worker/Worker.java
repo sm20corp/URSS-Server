@@ -55,18 +55,21 @@ public class Worker {
   public void refreshFeeds(Long id) {
     System.out.println("worker fired ! id: " + id);
     if (this.httpClient == null) {
+      System.out.println("initializing ...");
       initFeeds();
+      return ;
     }
-    else {
-      System.out.println("updating ...");
-      this.httpClient.get(4242, "localhost", "/api/feeds",
-        response -> {
-          response.bodyHandler(body -> {
-            System.out.println("handler fired");
-            JsonArray feeds = body.toJsonArray();
-            for (int i = 0; i < feeds.size(); i++) {
-              JsonObject feed = feeds.getJsonObject(i);
+    System.out.println("updating ...");
 
+    MongoDB.getInstance().getClient().find(
+      "feeds",
+      new JsonObject(),
+      res -> {
+        if (res.succeeded()) {
+          List<JsonObject> feeds = res.result();
+
+          if (feeds != null) {
+            for (JsonObject feed : feeds) {
               System.out.println("feed url: " + feed.getString("url"));
               this.httpClient.put(4242, "localhost", "/api/feeds/fromURL",
                 updateResponse -> {
@@ -80,10 +83,14 @@ public class Worker {
                 "\"url\":\"" + feed.getString("url") + "\"" +
                 "}"));
             }
-          });
-        })
-      .end();
-    }
+          }
+        }
+        else {
+          System.out.println("FAIL: " + res.cause().getMessage());
+          return ;
+        }
+      }
+    );
   }
 
   public void setDelay(long delay) {

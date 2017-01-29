@@ -120,8 +120,6 @@ public class ArticleController {
         if (res.succeeded()) {
           JsonObject article = res.result();
 
-          System.out.println("article found: " + article);
-
           if (article == null) {
             article = new JsonObject().put("message", "id not found in db");
             ctx.response().setStatusCode(HttpURLConnection.HTTP_NOT_FOUND);

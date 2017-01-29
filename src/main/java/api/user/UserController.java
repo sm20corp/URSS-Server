@@ -294,8 +294,6 @@ public class UserController {
         if (articleResult.succeeded()) {
           JsonObject article = articleResult.result();
 
-          System.out.println("article found: " + article);
-
           if (article == null) {
             ctx.response()
             .setStatusCode(HttpURLConnection.HTTP_NOT_FOUND)
@@ -461,8 +459,6 @@ public class UserController {
       articleResult -> {
         if (articleResult.succeeded()) {
           JsonObject article = articleResult.result();
-
-          System.out.println("article found: " + article);
 
           if (article == null) {
             ctx.response()
