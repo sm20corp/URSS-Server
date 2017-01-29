@@ -35,10 +35,13 @@ public class UserRoute {
     router.get(UserRoute.suffix + "/").handler(UserController::isAdmin);
     router.get(UserRoute.suffix + "/").handler(UserController::list);
 
+    router.post(UserRoute.suffix + "/createAccount").handler(CredentialController::verifyProperties);
     router.post(UserRoute.suffix + "/createAccount").handler(CredentialController::create);
     router.post(UserRoute.suffix + "/createAccount").handler(UserController::credentialToHistory);
+    router.post(UserRoute.suffix + "/createAccount").handler(HistoryController::verifyProperties);
     router.post(UserRoute.suffix + "/createAccount").handler(HistoryController::create);
     router.post(UserRoute.suffix + "/createAccount").handler(UserController::historyToUser);
+    router.post(UserRoute.suffix + "/createAccount").handler(UserController::verifyProperties);
     router.post(UserRoute.suffix + "/createAccount").handler(UserController::create);
     router.post(UserRoute.suffix + "/createAccount").handler(UserController::ok);
   }
