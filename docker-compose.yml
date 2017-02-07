@@ -22,6 +22,8 @@ services:
     network_mode: "host"
     restart: "always"
   front-db:
+    environment:
+      - PASSWORD=123soleil
     image: mrvautin/adminmongo:latest
     ports:
       - "1234:1234"

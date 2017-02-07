@@ -1,99 +1,0 @@
-<!doctype html><html>  <head>    <meta charset="utf-8">    <base href="../">    <title>JSDoc: source : login.js</title>    <link href="css/prettify-tomorrow.css" type="text/css" rel="stylesheet">    <link href="css/site.css" type="text/css" rel="stylesheet">  </head>  <body ng-app="">    <nav id="toc">      <input placeholder="Filter" id="filter-input" class="col12 block field" type="text">      <div class="nav-wrapper">      <h2><a href="index.html">Index</a></h2>      <ul class="module">        <!-- app -->        <h2 class="module">          <a chref="" ng-click="moduleapp = !moduleapp">            module: app          </a>          <i ng-cloak="" ng-show="moduleapp">+</i>        </h2>        <li id="app" ng-hide="moduleapp">          <ul class="group">            <h2>              <a href="" ng-click="appcontroller = !appcontroller">                controller              </a>              <i ng-cloak="" ng-show="appcontroller">+</i>            </h2>            <ul ng-hide="appcontroller">              <li>                <a href="app.feedListCtrl.html">feedListCtrl</a>              </li><li>                <a href="app.loginStrl.html">loginStrl</a>              </li>            </ul>          </ul>        </li>      </ul>      </div>    </nav>    <div id="content" class="page-wrap">      <h1 class="title">        source : login.js      </h1>      <div id="main" class="big-container">        <!-- source code html -->        <article>          <pre class="prettyprint source linenums"><code>'use strict';
-/**
-   * @memberof app
-   * @ngdoc controller
-   * @name loginStrl
-   * @param $scope {service} controller scope
-   * @param $http {service} promise service
-   * @param $window {service} Google NavigatorGeolocation wrapper
-   * @param $location {service} Converts element attributes to Google Maps API options
-   */
-angular.module('urssApp').controller('loginCtrl', function($scope, $http, $window, $location) {
-    $scope.emailFormat = /^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/;
-    $scope.error = "false";
-    /**
-      * login function making HTTP Post request to send login info
-      * if success we store the token and the username, and we update the login state
-      * if failure we display the error for the user
-      */
-    $scope.login = function() {
-      $scope.error = "false";
-        console.log("login result = " + "{" + $scope.username + ", " + $scope.password + "}");
-            $http({
-                url: 'http://79.137.78.39:4242/auth/local',
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    'email': $scope.username,
-                    'password': $scope.password
-                }
-            }).then(function mySucces(response) {
-                var accessToken = response.data.token;
-                console.log("Success " + accessToken);
-                $window.localStorage['is-logged'] = "true";
-                $window.localStorage['access-token'] = accessToken;
-                $window.localStorage['username'] = $scope.username;
-                $location.path("/main");
-            }, function myError(response) {
-                $scope.error = "true";
-                console.log("login error not found " + response.statusText);
-            });
-    };
-    /**
-      * subscribe function making HTTP Post request to send subscribe info
-      * if success we store the token and move to login page
-      */
-    $scope.subscribe = function() {
-        console.log("subscribe result = " + "{" + $scope.username + ", " + $scope.password + ", " + $scope.password_verify + "}");
-        $http({
-            url: 'http://79.137.78.39:4242/api/users/createAccount',
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: {
-                'email': $scope.username,
-                'password': $scope.password
-            }
-        }).then(function mySucces(response) {
-            var accessToken = response.data.id;
-            console.log("Success " + accessToken);
-            $window.localStorage['access-token'] = accessToken;
-            $location.path("/login");
-        }, function myError(response) {
-            console.log("Fail" + response.statusText);
-        });
-    };
-}).directive("passwordVerify", function() {
-    return {
-        require: "ngModel",
-        scope: {
-            passwordVerify: '='
-        },
-        link: function(scope, element, attrs, ctrl) {
-            scope.$watch(function() {
-                var combined;
-                if (scope.passwordVerify || ctrl.$viewValue) {
-                    combined = scope.passwordVerify + '_' + ctrl.$viewValue;
-                }
-                return combined;
-            }, function(value) {
-                if (value) {
-                    ctrl.$parsers.unshift(function(viewValue) {
-                        var origin = scope.passwordVerify;
-                        if (origin !== viewValue) {
-                            ctrl.$setValidity("passwordVerify", false);
-                            return undefined;
-                        } else {
-                            ctrl.$setValidity("passwordVerify", true);
-                            return viewValue;
-                        }
-                    });
-                }
-            });
-        }
-    };
-});
-</code></pre>        </article>        <!-- index.html -->        <!-- class files -->      </div>      <footer style="clear:both">        Documentation generated by        <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>        using        <a href="https://github.com/allenhwkim/angular-jsdoc">Angular-JSDoc template</a>      </footer>    </div>    <script src="js/prettify.js"></script>    <script src="js/angular.min.js"></script>    <script src="js/site.js"></script>    <!--%= prettyJson %-->    <script>      prettyPrint();      var lineNo = window.location.hash.match(/#line([0-9]+)$/);      lineNo && document.querySelector("ol li:nth-child("+(lineNo[1])+")").scrollIntoView();    </script>  </body></html>
